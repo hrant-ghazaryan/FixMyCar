@@ -1,6 +1,8 @@
 ﻿using FixMyCar.Web.Models;
 using FixMyCar.Web.Services;
+using FixMyCar.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FixMyCar.Web.Controllers;
 
@@ -19,18 +21,36 @@ public class CategoryController : Controller
     }
 
     [HttpGet]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        return View();
+        var categories = await _service.GetAllAsync();
+
+        var vm = new CategoryCreateViewModel
+        {
+            ParentCategories = categories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList()
+        };
+
+        return View(vm);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Category model)
+    public async Task<IActionResult> Create(CategoryCreateViewModel vm)
     {
         if (!ModelState.IsValid)
-            return View(model);
+            return View(vm);
 
-        await _service.AddAsync(model);
+        var category = new Category
+        {
+            Name = vm.Name,
+            ParentId = vm.ParentId
+        };
+
+        await _service.AddAsync(category);
+
         return RedirectToAction(nameof(Index));
     }
 

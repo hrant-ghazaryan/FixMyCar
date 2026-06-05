@@ -1,4 +1,4 @@
-﻿@model FixMyCar.Web.Models.Category
+﻿@model FixMyCar.Web.ViewModels.CategoryCreateViewModel
 
 @{
     ViewData["Title"] = "Create Category";
@@ -14,11 +14,16 @@
     </div>
 
     <div class="form-group mb-2">
-        <label>Parent Id (optional)</label>
-        <input asp-for="ParentId" class="form-control" />
+        <label>Parent Category</label>
+
+        <select asp-for="ParentId"
+                asp-items="Model.ParentCategories"
+                class="form-control">
+            <option value="">----</option>
+        </select>
+
     </div>
 
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-success">Create</button>
 
 </form>
