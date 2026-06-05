@@ -20,59 +20,56 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        ConfigureRelations(modelBuilder);
-    }
-
-    private void ConfigureRelations(ModelBuilder modelBuilder)
-    {
-        // User → Post (1 to many)
+        // USER → POST (1:N)
         modelBuilder.Entity<Post>()
             .HasOne(p => p.User)
             .WithMany(u => u.Posts)
             .HasForeignKey(p => p.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // User → Offer (1 to many)
-        // Offer → User (NO CASCADE to avoid multiple cascade paths)
+        // USER → OFFER (1:N)
         modelBuilder.Entity<Offer>()
             .HasOne(o => o.User)
             .WithMany(u => u.Offers)
             .HasForeignKey(o => o.UserId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        // Offer → Post (CASCADE is OK)
+        // POST → OFFER (1:N)
         modelBuilder.Entity<Offer>()
             .HasOne(o => o.Post)
             .WithMany(p => p.Offers)
             .HasForeignKey(o => o.PostId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Post → Offer (1 to many)
-        modelBuilder.Entity<Offer>()
-            .HasOne(o => o.User)
-            .WithMany(u => u.Offers)
-            .HasForeignKey(o => o.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        // Post → Category (many to one)
+        // POST → CATEGORY (N:1)
         modelBuilder.Entity<Post>()
             .HasOne(p => p.Category)
             .WithMany(c => c.Posts)
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Post → PostMedia (1 to many)
+        // POST → MEDIA (1:N)
         modelBuilder.Entity<PostMedia>()
             .HasOne(m => m.Post)
             .WithMany(p => p.Media)
             .HasForeignKey(m => m.PostId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Category self relation (Parent-Child)
+        // CATEGORY → SELF (Parent-Child)
         modelBuilder.Entity<Category>()
             .HasOne(c => c.Parent)
             .WithMany(c => c.Children)
             .HasForeignKey(c => c.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // UNIQUE: Email
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
+        // UNIQUE: Phone
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.PhoneNumber)
+            .IsUnique();
     }
 }

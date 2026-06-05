@@ -27,4 +27,7 @@ public class CategoryRepository : ICategoryRepository
 
     public void Update(Category category)
         => _context.Categories.Update(category);
+    public async Task<IEnumerable<Category>> GetAllChildrenAsync(int categoryId)
+        => await _context.Categories.Where(c => c.ParentId == categoryId).ToListAsync();
+
 }
