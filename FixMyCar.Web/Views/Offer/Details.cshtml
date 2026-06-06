@@ -1,0 +1,27 @@
+﻿@model FixMyCar.Web.Models.Offer
+
+@{
+    ViewData["Title"] = "Offer Details";
+}
+
+<h2>Offer Details</h2>
+
+<div class="card p-3">
+
+    <h4>@Model.Price $</h4>
+
+    <p>@Model.Message</p>
+
+    <hr />
+
+    <p><b>Post:</b> @Model.Post?.Title</p>
+    <p><b>UserId:</b> @Model.UserId</p>
+    <p><b>Created:</b> @Model.CreatedAt</p>
+
+</div>
+
+<a asp-controller="Profile"
+       asp-action="Index"
+       class="btn btn-secondary mt-3">
+    Back
+</a>

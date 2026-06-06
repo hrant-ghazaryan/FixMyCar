@@ -16,10 +16,15 @@ public class CategoryController : Controller
     // GET: /Category
     public async Task<IActionResult> Index()
     {
-        var categories = await _service.GetAllAsync();
-        return View(categories);
-    }
+        if (User.IsInRole("Admin"))
+        {
+            var all = await _service.GetAllAsync();
+            return View(all);
+        }
 
+        var userCategories = await _service.GetForUserAsync();
+        return View(userCategories);
+    }
     [HttpGet]
     public async Task<IActionResult> Create()
     {

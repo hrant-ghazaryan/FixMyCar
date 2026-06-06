@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Create Offer";
+    var postId = ViewBag.PostId;
+}
+
+<h2>Create Offer</h2>
+
+<form asp-action="Create" method="post">
+
+    <input type="hidden" name="postId" value="@postId" />
+
+    <div class="mb-3">
+        <label>Price</label>
+        <input type="number" name="price" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Message</label>
+        <textarea name="message" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Send Offer
+    </button>
+
+</form>

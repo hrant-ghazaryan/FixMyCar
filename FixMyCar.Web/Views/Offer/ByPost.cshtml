@@ -1,0 +1,51 @@
+﻿@model List<FixMyCar.Web.Models.Offer>
+
+@{
+    ViewData["Title"] = "Offers";
+}
+
+<h2>Offers</h2>
+
+<a class="btn btn-primary mb-3"
+       asp-controller="Offer"
+       asp-action="Create"
+       asp-route-postId="@ViewBag.PostId">
+    + Add Offer
+</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No offers yet.
+    </div>
+}
+else
+{
+    @foreach (var offer in Model)
+    {
+        <div class="card mb-2 shadow-sm">
+
+            <div class="card-body">
+
+                <h5>@offer.Price $</h5>
+
+                <p>@offer.Message</p>
+
+                <small class="text-muted">
+                    By UserId: @offer.UserId
+                </small>
+
+                <div class="mt-2 text-end">
+                    <a asp-action="Delete"
+                           asp-route-id="@offer.Id"
+                           asp-route-postId="@offer.PostId"
+                           class="btn btn-sm btn-danger">
+                        Delete
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    }
+}

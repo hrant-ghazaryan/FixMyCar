@@ -14,15 +14,16 @@ public class PostController : Controller
     private readonly IPostService _postService;
     private readonly ICategoryService _categoryService;
     private readonly IUserService _userService;
+    private readonly IOfferService _offerService;
 
-    public PostController(
-        IPostService postService,
-        ICategoryService categoryService,
-        IUserService userService)
+
+    public PostController(IPostService postService,ICategoryService categoryService,
+                          IUserService userService, IOfferService offerService)
     {
         _postService = postService;
         _categoryService = categoryService;
         _userService = userService;
+        _offerService = offerService;
     }
 
     // GET: /Post
@@ -87,6 +88,10 @@ public class PostController : Controller
 
         if (post == null)
             return NotFound();
+
+        var offers = await _offerService.GetByPostIdAsync(id);
+
+        ViewBag.Offers = offers;
 
         return View(post);
     }

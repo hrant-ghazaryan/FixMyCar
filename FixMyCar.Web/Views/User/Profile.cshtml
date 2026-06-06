@@ -71,3 +71,71 @@ else
 {
     <p>No posts yet.</p>
 }
+<hr />
+
+<h3>My Offers</h3>
+
+@{
+    var offers = ViewBag.UserOffers as List<FixMyCar.Web.Models.Offer>;
+}
+
+@if (offers != null && offers.Any())
+{
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Price</th>
+                <th>Message</th>
+                <th>Post</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var offer in offers)
+            {
+                <tr>
+                    <td>@offer.Price $</td>
+                    <td>@offer.Message</td>
+                    <td>@offer.Post?.Title</td>
+                    <td>@offer.CreatedAt</td>
+
+                    <td class="text-end">
+
+                        <!-- View -->
+                        <a asp-controller="Offer"
+                               asp-action="Details"
+                               asp-route-id="@offer.Id"
+                               class="btn btn-sm btn-info">
+                            View
+                        </a>
+
+                        <!-- Edit -->
+                        <a asp-controller="Offer"
+                               asp-action="Edit"
+                               asp-route-id="@offer.Id"
+                               class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <!-- Delete -->
+                        <a asp-controller="Offer"
+                               asp-action="Delete"
+                               asp-route-id="@offer.Id"
+                               class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+else
+{
+    <p>No offers yet.</p>
+}

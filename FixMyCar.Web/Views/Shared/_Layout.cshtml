@@ -43,6 +43,13 @@
 
                     <!-- RIGHT SIDE -->
                     <ul class="navbar-nav ms-auto">
+                        <li class="nav-item d-flex align-items-center me-2">
+                            <a asp-controller="Post" asp-action="Create"
+                                   class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                   style="width:38px; height:38px; font-size:20px;">
+                                +
+                            </a>
+                        </li>
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">

@@ -4,16 +4,28 @@
     ViewData["Title"] = "Categories";
 }
 
-<h2>Categories</h2>
+<h2 class="mb-3">Categories</h2>
 
-<a class="btn btn-primary mb-3" asp-action="Create">Create New</a>
+<!-- ✅ ADMIN CREATE BUTTON -->
+@if (User.IsInRole("Admin"))
+{
+    <div class="mb-3 text-end">
+        <a asp-action="Create" class="btn btn-success">
+            + Create New Category
+        </a>
+    </div>
+}
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Name</th>
-            <th>ParentId</th>
-            <th>Actions</th>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <th>Parent</th>
+                <th>Actions</th>
+            }
         </tr>
     </thead>
 
@@ -21,12 +33,35 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Name</td>
-                <td>@item.ParentId</td>
+
+                <!-- Category Name -->
                 <td>
-                    <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @item.Name
                 </td>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <!-- Parent only for admin -->
+                    <td>
+                        @(item.Parent?.Name ?? "-")
+                    </td>
+
+                    <!-- Admin actions -->
+                    <td>
+                        <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+                    </td>
+                }
+
             </tr>
         }
     </tbody>

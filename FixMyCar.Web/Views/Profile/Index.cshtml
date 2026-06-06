@@ -1,0 +1,35 @@
+﻿@model List<FixMyCar.Web.Models.Offer>
+
+<h2>My Profile</h2>
+
+<hr />
+
+<h3>My Offers</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You haven't created any offers yet.
+    </div>
+}
+else
+{
+    @foreach (var offer in Model)
+    {
+        <div class="card mb-2">
+
+            <div class="card-body">
+
+                <h5>@offer.Price $</h5>
+
+                <p>@offer.Message</p>
+
+                <small>
+                    Post: @offer.Post?.Title
+                </small>
+
+            </div>
+
+        </div>
+    }
+}

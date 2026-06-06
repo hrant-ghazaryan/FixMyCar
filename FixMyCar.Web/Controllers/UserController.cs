@@ -11,12 +11,15 @@ public class UserController : Controller
 {
     private readonly IUserService _userService;
     private readonly IPostService _postService;
+    private readonly IOfferService _offerService;
 
 
-    public UserController(IUserService userService, IPostService postService)
+    public UserController(IUserService userService, IPostService postService,
+        IOfferService offerService)
     {
         _userService = userService;
         _postService = postService;
+        _offerService = offerService;
     }
 
     // =========================
@@ -85,13 +88,19 @@ public class UserController : Controller
 
         // 🔐 COOKIE AUTH
         var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.UserName),
+        new Claim(ClaimTypes.Email, user.Email),
 
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        // ⭐ ADD THIS LINE
+        new Claim(ClaimTypes.Role, user.Role)   // <-- IMPORTANT
+    };
+
+        var identity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme
+        );
 
         var principal = new ClaimsPrincipal(identity);
 
@@ -129,6 +138,8 @@ public class UserController : Controller
 
         var userPosts = await _postService.GetByUserIdAsync(user.Id);
         ViewBag.UserPosts = userPosts;
+        var offers = await _offerService.GetByUserIdAsync(user.Id);
+        ViewBag.UserOffers = offers;
 
         return View(user);
     }

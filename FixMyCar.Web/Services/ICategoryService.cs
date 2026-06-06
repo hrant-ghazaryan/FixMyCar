@@ -9,4 +9,5 @@ public interface ICategoryService
     Task AddAsync(Category category);
     Task UpdateAsync(Category category);
     Task DeleteAsync(int id);
+    public Task<List<Category>> GetForUserAsync();
 }

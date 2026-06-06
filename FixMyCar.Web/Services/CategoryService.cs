@@ -47,4 +47,12 @@ public class CategoryService : ICategoryService
         _repo.Delete(category);
         await _repo.SaveAsync();
     }
+    public async Task<List<Category>> GetForUserAsync()
+    {
+        var categories = await _repo.GetAllAsync();
+
+        return categories
+            .Where(c => c.ParentId == null)
+            .ToList();
+    }
 }
