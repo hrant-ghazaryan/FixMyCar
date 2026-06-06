@@ -18,7 +18,6 @@ public class PostRepository : IPostRepository
         return await _context.Posts
             .Include(p => p.User)
             .Include(p => p.Category)
-            .Include(p => p.Offers)
             .ToListAsync();
     }
 
@@ -45,4 +44,14 @@ public class PostRepository : IPostRepository
     {
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<Post>> GetByUserIdAsync(int id)
+        => await _context.Posts
+        .Where(p => p.UserId == id)
+        .Include(p => p.Category)
+        .Include(p => p.User)
+        .ToListAsync();
+
+    public async Task UpdateAsync(Post model)
+        =>  _context.Posts.Update(model);
 }

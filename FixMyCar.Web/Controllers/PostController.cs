@@ -100,14 +100,61 @@ public class PostController : Controller
         if (post == null)
             return NotFound();
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (post.UserId != int.Parse(userId!))
+            return Forbid();
+
         return View(post);
     }
+
 
     // POST: /Post/Delete/5
     [HttpPost, ActionName("Delete")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        var post = await _postService.GetByIdAsync(id);
+
+        if (post == null)
+            return NotFound();
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (post.UserId != int.Parse(userId!))
+            return Forbid();
+
         await _postService.DeleteAsync(id);
+
         return RedirectToAction(nameof(Index));
     }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var post = await _postService.GetByIdAsync(id);
+
+        if (post == null)
+            return NotFound();
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (post.UserId != int.Parse(userId!))
+            return Forbid();
+
+        ViewBag.Categories = await _categoryService.GetAllAsync();
+
+        return View(post);
+    }
+    [HttpPost]
+    public async Task<IActionResult> Edit(Post model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (model.UserId != int.Parse(userId!))
+            return Forbid();
+
+        await _postService.UpdateAsync(model);
+
+        return RedirectToAction("Profile", "User");
+    }
+
 }

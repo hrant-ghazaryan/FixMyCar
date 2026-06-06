@@ -47,4 +47,10 @@ public class PostService : IPostService
         await _repo.DeleteAsync(post);
         await _repo.SaveAsync();
     }
+
+    public async Task<List<Post>> GetByUserIdAsync(int id)
+        => await _repo.GetByUserIdAsync(id);
+
+    public async Task UpdateAsync(Post model)
+        => await _repo.UpdateAsync(model);
 }

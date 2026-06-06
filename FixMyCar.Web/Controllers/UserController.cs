@@ -10,10 +10,13 @@ namespace FixMyCar.Web.Controllers;
 public class UserController : Controller
 {
     private readonly IUserService _userService;
+    private readonly IPostService _postService;
 
-    public UserController(IUserService userService)
+
+    public UserController(IUserService userService, IPostService postService)
     {
         _userService = userService;
+        _postService = postService;
     }
 
     // =========================
@@ -123,6 +126,9 @@ public class UserController : Controller
 
         if (user == null)
             return NotFound();
+
+        var userPosts = await _postService.GetByUserIdAsync(user.Id);
+        ViewBag.UserPosts = userPosts;
 
         return View(user);
     }

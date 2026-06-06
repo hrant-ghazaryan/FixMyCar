@@ -1,0 +1,73 @@
+﻿@model FixMyCar.Web.Models.User
+
+@{
+    ViewData["Title"] = "Profile";
+    var posts = ViewBag.UserPosts as List<FixMyCar.Web.Models.Post>;
+}
+
+<h2>My Profile</h2>
+
+<div class="card p-3 mb-4">
+
+    <h4>@Model.UserName</h4>
+
+    <p><b>Email:</b> @Model.Email</p>
+    <p><b>Phone:</b> @Model.PhoneNumber</p>
+    <p><b>Created:</b> @Model.CreatedAt</p>
+
+</div>
+
+<hr />
+
+<h3>My Posts</h3>
+
+@if (posts != null && posts.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>City</th>
+                <th>Category</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in posts)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.City</td>
+                    <td>@item.Category?.Name</td>
+                    <td>
+                        <a asp-controller="Post"
+                               asp-action="Details"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-info">
+                            View
+                        </a>
+
+                        <a asp-controller="Post"
+                               asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+
+                        <a asp-controller="Post"
+                               asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-sm btn-danger">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No posts yet.</p>
+}
