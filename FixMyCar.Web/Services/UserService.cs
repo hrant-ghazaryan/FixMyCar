@@ -8,6 +8,10 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     public UserService(IUserRepository userRepository)
         => _userRepository = userRepository;
+
+    public Task<IEnumerable<User>> GetAllAsync()
+        => _userRepository.GetAllAsync();
+
     public async Task<User?> GetByEmailAsync(string email)
        => await _userRepository.GetByEmailAsync(email);
 
@@ -32,4 +36,5 @@ public class UserService : IUserService
         await _userRepository.AddAsync(user);
         await _userRepository.SaveAsync();
     }
+
 }

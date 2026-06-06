@@ -1,0 +1,37 @@
+﻿@model List<FixMyCar.Web.Models.Post>
+
+@{
+    ViewData["Title"] = "Posts";
+}
+
+<h2>Posts</h2>
+
+<a class="btn btn-primary mb-3" asp-action="Create">Create New Post</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>City</th>
+            <th>User</th>
+            <th>Category</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.City</td>
+                <td>@item.User?.UserName</td>
+                <td>@item.Category?.Name</td>
+                <td>
+                    <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,17 @@
+﻿@model FixMyCar.Web.Models.Post
+
+@{
+    ViewData["Title"] = "Post Details";
+}
+
+<h2>@Model.Title</h2>
+
+<hr />
+
+<p><b>Description:</b> @Model.Description</p>
+<p><b>City:</b> @Model.City</p>
+<p><b>User:</b> @Model.User?.UserName</p>
+<p><b>Category:</b> @Model.Category?.Name</p>
+<p><b>Created:</b> @Model.CreatedAt</p>
+
+<a asp-action="Index" class="btn btn-secondary">Back</a>

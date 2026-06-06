@@ -1,0 +1,54 @@
+﻿@model FixMyCar.Web.ViewModels.PostCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Post";
+}
+
+<h2 class="mb-3">Create Post</h2>
+
+<form asp-action="Create" method="post">
+
+    <div class="row">
+
+        <!-- Title -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Title</label>
+            <input asp-for="Title" class="form-control" placeholder="Enter problem title" />
+        </div>
+
+        <!-- City -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">City</label>
+            <input asp-for="City" class="form-control" placeholder="e.g. Yerevan" />
+        </div>
+
+        <!-- Category -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Category</label>
+            <select asp-for="CategoryId"
+                    asp-items="Model.Categories"
+                    class="form-select">
+                <option value="">-- Select Category --</option>
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div class="col-12 mb-3">
+            <label class="form-label">Description</label>
+            <textarea asp-for="Description"
+                      class="form-control"
+                      rows="5"
+                      placeholder="Describe your car problem in detail"></textarea>
+        </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Create Post
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancel
+    </a>
+
+</form>
