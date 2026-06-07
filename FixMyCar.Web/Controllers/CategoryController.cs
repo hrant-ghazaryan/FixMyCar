@@ -9,21 +9,24 @@ namespace FixMyCar.Web.Controllers;
 public class CategoryController : Controller
 {
     private readonly ICategoryService _service;
+    private readonly IPostService _postservice;
 
-    public CategoryController(ICategoryService service)
-        => _service = service;
 
+    public CategoryController(ICategoryService service, IPostService postservice)
+    {
+        _service = service;
+        _postservice = postservice;
+    }
     // GET: /Category
     public async Task<IActionResult> Index()
     {
-        if (User.IsInRole("Admin"))
-        {
-            var all = await _service.GetAllAsync();
-            return View(all);
-        }
+        var categories = await _service.GetAllAsync();
 
-        var userCategories = await _service.GetForUserAsync();
-        return View(userCategories);
+        var parents = categories
+            .Where(x => x.ParentId == null)
+            .ToList();
+
+        return View(parents);
     }
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -40,6 +43,26 @@ public class CategoryController : Controller
         };
 
         return View(vm);
+    }
+    public async Task<IActionResult> ByCategory(int categoryId)
+    {
+        var posts = await _postservice.GetAllAsync();
+
+        var filtered = posts
+            .Where(p => p.CategoryId == categoryId)
+            .ToList();
+
+        return View("Index", filtered);
+    }
+    public async Task<IActionResult> SubCategories(int parentId)
+    {
+        var categories = await _service.GetAllAsync();
+
+        var children = categories
+            .Where(c => c.ParentId == parentId)
+            .ToList();
+
+        return View(children);
     }
 
     [HttpPost]

@@ -3,54 +3,63 @@
 
 @{
     ViewData["Title"] = "Post Details";
-    var offers = ViewBag.Offers as List<FixMyCar.Web.Models.Offer> ?? new();
+    var offers = ViewBag.Offers as List<Offer> ?? new List<Offer>();
 }
 
-<div class="container mt-4">
+<div class="container py-4">
 
-    <!-- POST HEADER -->
+
+    <!-- POST CARD -->
     <div class="card shadow-sm border-0 mb-4">
+
         <div class="card-body">
 
-            <h2 class="mb-2">@Model.Title</h2>
+            <h2 class="fw-bold mb-2">
+                @Model.Title
+            </h2>
 
-            <p class="text-muted mb-1">
+            <div class="text-muted mb-2">
                 📍 @Model.City
-            </p>
+            </div>
 
-            <p class="mb-2">
+            <div class="mb-2">
                 🏷 @Model.Category?.Name
-            </p>
+            </div>
 
             <p class="mt-3">
                 @Model.Description
             </p>
 
         </div>
+
     </div>
 
-    <!-- IMAGES -->
+    <!-- IMAGES SECTION -->
     @if (Model.Media != null && Model.Media.Any())
     {
-        <h4 class="mt-4">Photos</h4>
+        <h4 class="mb-3">Photos</h4>
 
         <div class="row">
+
             @foreach (var media in Model.Media.OrderBy(m => m.Order))
             {
-                @if (media.Type == MediaType.Image)
+                if (media.Type == MediaType.Image)
                 {
                     <div class="col-md-4 mb-3">
-                        <img src="@media.FilePath"
-                             alt="Post image"
-                             class="img-fluid rounded shadow-sm" />
+
+                        <img src="@Url.Content(media.FilePath)"
+                             class="img-fluid rounded shadow-sm"
+                             style="height:200px; object-fit:cover;" />
+
                     </div>
                 }
             }
+
         </div>
     }
 
-    <!-- OFFERS -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
+    <!-- OFFERS SECTION -->
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
 
         <h4>Offers</h4>
 
@@ -67,18 +76,20 @@
     {
         @foreach (var offer in offers)
         {
-            <div class="card mb-2 shadow-sm border-0">
+            <div class="card mb-2 border-0 shadow-sm">
 
                 <div class="card-body d-flex justify-content-between">
 
                     <div>
-                        <h5 class="mb-1 text-success">
+
+                        <h5 class="text-success mb-1">
                             $@offer.Price
                         </h5>
 
                         <p class="mb-0">
                             @offer.Message
                         </p>
+
                     </div>
 
                     <div class="text-end">
@@ -86,13 +97,6 @@
                         <small class="text-muted d-block">
                             User: @offer.UserId
                         </small>
-
-                        <a asp-controller="Offer"
-                               asp-action="Details"
-                               asp-route-id="@offer.Id"
-                               class="btn btn-sm btn-info mt-2">
-                            View
-                        </a>
 
                     </div>
 
@@ -109,3 +113,8 @@
     }
 
 </div>
+<!-- Փոխում ենք սովորական հղումը history.back()-ով -->
+<a asp-action="Index"
+       class="btn btn-secondary mb-3">
+    ← Back
+</a>

@@ -116,6 +116,17 @@ public class PostController : Controller
         return RedirectToAction("Index");
     }
 
+    public async Task<IActionResult> ByCategory(int categoryId)
+    {
+        var posts = await _postService.GetAllAsync();
+
+        var result = posts
+            .Where(x => x.CategoryId == categoryId)
+            .ToList();
+
+        return View("Index", result);
+    }
+
     // GET: /Post/Details/5
     public async Task<IActionResult> Details(int id)
     {

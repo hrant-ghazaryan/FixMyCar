@@ -5,7 +5,6 @@
 }
 
 <h2>Offer Details</h2>
-
 <div class="card p-3">
 
     <h4>@Model.Price $</h4>
@@ -19,9 +18,9 @@
     <p><b>Created:</b> @Model.CreatedAt</p>
 
 </div>
-
-<a asp-controller="Profile"
-       asp-action="Index"
-       class="btn btn-secondary mt-3">
-    Back
+<a asp-controller="Post"
+     asp-action="Details"
+     asp-route-id="@Model.PostId"
+     class="btn btn-secondary mt-3">
+     Back
 </a>

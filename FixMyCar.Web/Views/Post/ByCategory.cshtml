@@ -1,0 +1,42 @@
+﻿@model List<FixMyCar.Web.Models.Post>
+
+<h3 class="mb-4">Posts</h3>
+
+<a asp-controller="Category"
+       asp-action="Index"
+       class="btn btn-light mb-3">
+    ← Back to Categories
+</a>
+
+@foreach (var post in Model)
+{
+    var mainImage = post.Media?.FirstOrDefault(m => m.IsMain);
+
+    <div class="card mb-3 shadow-sm">
+
+        @if (mainImage != null)
+        {
+            <img src="@Url.Content(mainImage.FilePath)"
+                 style="height:250px; width:100%; object-fit:cover;" />
+        }
+
+        <div class="card-body">
+
+            <h5>@post.Title</h5>
+
+            <p class="text-muted">
+                @post.Description
+            </p>
+
+            <div class="d-flex justify-content-between">
+
+                <span>📍 @post.City</span>
+
+                <span>👤 @post.User?.UserName</span>
+
+            </div>
+
+        </div>
+
+    </div>
+}

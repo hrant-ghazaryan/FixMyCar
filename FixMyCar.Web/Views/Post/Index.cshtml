@@ -4,6 +4,58 @@
     ViewData["Title"] = "Posts";
 }
 
+<style>
+    html, body {
+        scroll-behavior: auto !important; /* Անջատում ենք սահուն սքրոլը */
+    }
+
+    /* Էջը սկզբից լրիվ թաքցնում ենք */
+    .invisible-load {
+        opacity: 0 !important;
+        visibility: hidden !important;
+    }
+
+    /* Ակնթարթորեն ցույց տալու կլաս */
+    .visible-load {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transition: none !important;
+    }
+</style>
+
+<script>
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    // Անմիջապես թաքցնում ենք էջը, հենց բրաուզերը սկսում է կարդալ HTML-ը
+    document.documentElement.classList.add('invisible-load');
+
+    // Ֆունկցիա, որը կատարում է սքրոլը և ցույց տալիս էջը
+    function handleScrollRestoration() {
+        const scroll = sessionStorage.getItem("postScroll");
+
+        if (scroll !== null) {
+            window.scrollTo(0, Number(scroll));
+        }
+
+        // Սպասում ենք 20մվ, որ սքրոլը «կադրից դուրս» կատարվի, նոր լույսերը միացնենք
+        setTimeout(() => {
+            document.documentElement.classList.remove('invisible-load');
+            document.documentElement.classList.add('visible-load');
+        }, 20);
+    }
+
+    // Այս իրադարձությունը աշխատում է թե՛ Back տալուց, թե՛ ուղիղ հղումով Index գալուց
+    document.addEventListener("DOMContentLoaded", handleScrollRestoration);
+    window.addEventListener("pageshow", handleScrollRestoration);
+
+    // Սքրոլի դիրքը պահում ենք միայն այն ժամանակ, երբ գնում ենք Details
+    function saveScrollPosition() {
+        sessionStorage.setItem("postScroll", window.scrollY);
+    }
+</script>
+
 <div class="container py-4">
 
     <div class="text-center mb-5">
@@ -77,8 +129,10 @@
 
                         <div class="d-flex gap-2">
 
+                            <!-- Հին կոճակը փոխարինում ենք այս նորով (ավելացել է onclick-ը) -->
                             <a asp-action="Details"
                                    asp-route-id="@post.Id"
+                                   onclick="saveScrollPosition()"
                                    class="btn btn-outline-dark flex-fill">
                                 View Details
                             </a>
