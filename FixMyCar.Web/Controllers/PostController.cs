@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace FixMyCar.Web.Controllers;
 
-[Authorize]
 public class PostController : Controller
 {
     private readonly IPostService _postService;
@@ -34,6 +33,7 @@ public class PostController : Controller
     }
 
     // GET: /Post/Create
+    [Authorize(Roles ="User")]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
@@ -52,16 +52,14 @@ public class PostController : Controller
     }
 
     // POST: /Post/Create
+    [Authorize(Roles = "User")]
     [HttpPost]
     public async Task<IActionResult> Create(PostCreateViewModel vm)
     {
         if (!ModelState.IsValid)
             return View(vm);
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId == null)
-            return RedirectToAction("Login", "User");
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var post = new Post
         {
@@ -69,15 +67,52 @@ public class PostController : Controller
             Description = vm.Description,
             City = vm.City,
             CategoryId = vm.CategoryId,
-
-            UserId = int.Parse(userId)   // ✅ FIX HERE
+            UserId = userId,
+            Media = new List<PostMedia>()
         };
 
         await _postService.CreateAsync(post);
-        if (!int.TryParse(userId, out var parsedUserId))
+
+        // ⭐ HERE STARTS IMAGE UPLOAD
+        if (vm.Files != null && vm.Files.Count > 0)
         {
-            return RedirectToAction("Login", "User");
+            var uploadsFolder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/uploads"
+            );
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            int order = 0;
+
+            foreach (var file in vm.Files)
+            {
+                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+
+                var fullPath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                post.Media.Add(new PostMedia
+                {
+                    FilePath = "/uploads/" + fileName,
+                    Type = MediaType.Image,
+                    Order = order,
+                    IsMain = order == 0,
+                    CreatedAt = DateTime.UtcNow,
+                    PostId = post.Id
+                });
+
+                order++;
+            }
+
+            await _postService.UpdateAsync(post);
         }
+
         return RedirectToAction("Index");
     }
 

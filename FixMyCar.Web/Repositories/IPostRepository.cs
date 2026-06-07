@@ -9,6 +9,7 @@ public interface IPostRepository
     Task<Post?> GetByIdAsync(int id);
     Task AddAsync(Post post);
     Task DeleteAsync(Post post);
+    Task AddMediaAsync(PostMedia media);
     Task SaveAsync();
     Task UpdateAsync(Post model);
 }

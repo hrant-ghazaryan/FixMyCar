@@ -1,5 +1,6 @@
 ﻿using FixMyCar.Web.Models;
 using FixMyCar.Web.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace FixMyCar.Web.Services;
 
@@ -53,4 +54,10 @@ public class PostService : IPostService
 
     public async Task UpdateAsync(Post model)
         => await _repo.UpdateAsync(model);
+
+    public async Task AddMediaAsync(PostMedia media)
+    {
+        await _repo.AddMediaAsync(media);
+        await _repo.SaveAsync();
+    }
 }

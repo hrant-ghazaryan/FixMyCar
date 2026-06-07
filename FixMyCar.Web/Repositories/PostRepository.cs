@@ -9,41 +9,31 @@ public class PostRepository : IPostRepository
     private readonly AppDbContext _context;
 
     public PostRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+        => _context = context;
 
     public async Task<List<Post>> GetAllAsync()
-    {
-        return await _context.Posts
+        => await _context.Posts
             .Include(p => p.User)
             .Include(p => p.Category)
+            .Include(p => p.Media)
             .ToListAsync();
-    }
 
     public async Task<Post?> GetByIdAsync(int id)
-    {
-        return await _context.Posts
+        => await _context.Posts
             .Include(p => p.User)
             .Include(p => p.Category)
             .Include(p => p.Offers)
+            .Include(p => p.Media)
             .FirstOrDefaultAsync(p => p.Id == id);
-    }
 
     public async Task AddAsync(Post post)
-    {
-        await _context.Posts.AddAsync(post);
-    }
+        => await _context.Posts.AddAsync(post);
 
     public async Task DeleteAsync(Post post)
-    {
-        _context.Posts.Remove(post);
-    }
+        => _context.Posts.Remove(post);
 
     public async Task SaveAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
+        => await _context.SaveChangesAsync();
 
     public async Task<List<Post>> GetByUserIdAsync(int id)
         => await _context.Posts
@@ -54,4 +44,7 @@ public class PostRepository : IPostRepository
 
     public async Task UpdateAsync(Post model)
         =>  _context.Posts.Update(model);
+
+    public async Task AddMediaAsync(PostMedia media)
+        => await _context.PostMedia.AddAsync(media);
 }

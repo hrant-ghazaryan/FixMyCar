@@ -11,4 +11,5 @@ public class PostCreateViewModel
     public int CategoryId { get; set; }
 
     public List<SelectListItem> Categories { get; set; } = new();
+    public List<IFormFile>? Files { get; set; }
 }

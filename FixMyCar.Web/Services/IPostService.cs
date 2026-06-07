@@ -10,4 +10,5 @@ public interface IPostService
     Task CreateAsync(Post post);
     Task DeleteAsync(int id);
     Task UpdateAsync(Post model);
+    Task AddMediaAsync(PostMedia media);
 }
