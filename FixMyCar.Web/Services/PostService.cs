@@ -60,4 +60,41 @@ public class PostService : IPostService
         await _repo.AddMediaAsync(media);
         await _repo.SaveAsync();
     }
+
+    public async Task<int> GetCountAsync(string? search)
+    {
+        var posts = await _repo.GetAllAsync();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            search = search.Trim();
+
+            posts = posts.Where(p =>
+                p.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                p.Description.Contains(search, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+
+        return posts.Count;
+    }
+
+    public async Task<List<Post>> GetPagedAsync(int page, int pageSize, string? search)
+    {
+        var posts = await _repo.GetAllAsync();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            search = search.Trim();
+
+            posts = posts.Where(p =>
+                p.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                p.Description.Contains(search, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
+        }
+
+        return posts
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
 }

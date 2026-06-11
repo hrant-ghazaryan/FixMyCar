@@ -23,13 +23,6 @@
                     <!-- LEFT SIDE -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Category" asp-action="Index">
                                 Categories
                             </a>
@@ -43,6 +36,30 @@
 
                     <!-- RIGHT SIDE -->
                     <ul class="navbar-nav ms-auto">
+                        <li class="nav-item me-2 d-flex align-items-center">
+
+                            <form method="get"
+                                  asp-controller="Home"
+                                  asp-action="Index"
+                                  class="d-flex">
+
+                                <div class="search-box">
+
+                                    <input type="text"
+                                           name="search"
+                                           value="@Context.Request.Query["search"]"
+                                           placeholder="Search..."
+                                           class="search-input" />
+
+                                    <button type="submit" class="search-btn">
+                                        🔍
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </li>
                         <li class="nav-item d-flex align-items-center me-2">
                             <a asp-controller="Post" asp-action="Create"
                                    class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
@@ -100,5 +117,36 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+
+            window.addEventListener("pagehide", function () {
+                sessionStorage.setItem(
+                    window.location.pathname + "_scroll",
+                    window.scrollY
+                );
+            });
+
+            window.addEventListener("pageshow", function () {
+
+                const scroll = sessionStorage.getItem(
+                    window.location.pathname + "_scroll"
+                );
+
+                if (scroll !== null) {
+                    window.scrollTo(0, parseInt(scroll));
+                }
+
+            });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

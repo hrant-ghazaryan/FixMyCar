@@ -1,6 +1,7 @@
 ﻿using FixMyCar.Web.Data;
 using FixMyCar.Web.Models;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FixMyCar.Web.Repositories;
 
@@ -47,4 +48,15 @@ public class PostRepository : IPostRepository
 
     public async Task AddMediaAsync(PostMedia media)
         => await _context.PostMedia.AddAsync(media);
+
+    public async Task<int> GetCountAsync()
+        => await _context.Posts.CountAsync();
+
+    public async Task<List<Post>> GetPagedAsync(int page, int pageSize)
+        => await _context.Posts
+            .Include(p => p.Media)
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 }

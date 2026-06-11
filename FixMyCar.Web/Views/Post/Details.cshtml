@@ -114,7 +114,12 @@
 
 </div>
 <!-- Փոխում ենք սովորական հղումը history.back()-ով -->
-<a asp-action="Index"
+@* <a asp-action="Index"
        class="btn btn-secondary mb-3">
     ← Back
-</a>
+</a> *@
+<button type="button"
+        class="btn btn-secondary"
+        onclick="history.back()">
+    ← Back
+</button>
