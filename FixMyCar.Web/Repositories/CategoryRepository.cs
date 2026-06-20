@@ -30,4 +30,6 @@ public class CategoryRepository : ICategoryRepository
     public async Task<IEnumerable<Category>> GetAllChildrenAsync(int categoryId)
         => await _context.Categories.Where(c => c.ParentId == categoryId).ToListAsync();
 
+    public async Task<IEnumerable<Category>> GetByParentId(int parentId)
+        => await _context.Categories.Where(c => c.ParentId == parentId).ToListAsync();
 }

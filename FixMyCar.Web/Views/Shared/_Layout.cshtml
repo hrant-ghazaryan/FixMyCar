@@ -61,17 +61,23 @@
 
                         </li>
                         <li class="nav-item d-flex align-items-center me-2">
-                            <a asp-controller="Post" asp-action="Create"
-                                   class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                   style="width:38px; height:38px; font-size:20px;">
-                                +
+                            <a asp-controller="Post"
+                                   asp-action="Create"
+                                   class="btn btn-dark btn-sm rounded-pill px-3">
+                                + Post
                             </a>
                         </li>
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="User" asp-action="Profile">
-                                    @User.Identity.Name
+                                <a class="nav-link text-dark"
+                                       asp-controller="User"
+                                       asp-action="Profile">
+
+                                    @(string.IsNullOrWhiteSpace(User.Identity?.Name)
+                                        ? "User"
+                                        : User.Identity.Name)
+
                                 </a>
                             </li>
 

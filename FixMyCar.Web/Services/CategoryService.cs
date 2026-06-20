@@ -55,4 +55,14 @@ public class CategoryService : ICategoryService
             .Where(c => c.ParentId == null)
             .ToList();
     }
+
+    public async Task<IEnumerable<Category>> GetByParentId(int parentId)
+    {
+        var categories = await _repo.GetByParentId(parentId);
+
+        if (categories is null)
+            throw new Exception("No Any Category");
+
+        return categories;
+    }
 }

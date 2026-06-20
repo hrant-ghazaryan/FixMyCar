@@ -7,135 +7,156 @@
 
 <h2>My Profile</h2>
 
-<div class="card p-3 mb-4">
+<div class="card border-0 shadow-sm rounded-4 mb-4">
 
-    <h4>@Model.UserName</h4>
+    <div class="card-body p-4">
 
-    <p><b>Email:</b> @Model.Email</p>
-    <p><b>Phone:</b> @Model.PhoneNumber</p>
-    <p><b>Created:</b> @Model.CreatedAt</p>
+        <h3 class="fw-bold mb-1">
+            @(string.IsNullOrWhiteSpace(Model.UserName)
+                ? "User"
+                : Model.UserName)
+        </h3>
+
+        <p class="text-muted mb-3">
+            @Model.Email
+        </p>
+
+        <div class="row small">
+
+            <div class="col-md-6">
+                📞 @(Model.PhoneNumber ?? "Not specified")
+            </div>
+
+            <div class="col-md-6 text-md-end">
+                📅 @Model.CreatedAt.ToString("dd MMM yyyy")
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-<hr />
-
-<h3>My Posts</h3>
+<h4 class="fw-semibold mb-3">
+    My Posts
+</h4>
 
 @if (posts != null && posts.Any())
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>City</th>
-                <th>Category</th>
-                <th></th>
-            </tr>
-        </thead>
+    @foreach (var post in posts)
+    {
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
 
-        <tbody>
-            @foreach (var item in posts)
-            {
-                <tr>
-                    <td>@item.Title</td>
-                    <td>@item.City</td>
-                    <td>@item.Category?.Name</td>
-                    <td>
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <span class="badge bg-light text-dark border mb-2">
+                            @post.Category?.Name
+                        </span>
+
+                        <h5 class="fw-bold mb-1">
+                            @post.Title
+                        </h5>
+
+                        <div class="text-muted small">
+                            📍 @post.City
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex gap-2 align-items-start">
+
                         <a asp-controller="Post"
                                asp-action="Details"
-                               asp-route-id="@item.Id"
-                               class="btn btn-sm btn-info">
+                               asp-route-id="@post.Id"
+                               class="btn btn-outline-dark btn-sm">
                             View
                         </a>
 
                         <a asp-controller="Post"
                                asp-action="Edit"
-                               asp-route-id="@item.Id"
-                               class="btn btn-sm btn-warning">
+                               asp-route-id="@post.Id"
+                               class="btn btn-outline-secondary btn-sm">
                             Edit
                         </a>
 
-                        <a asp-controller="Post"
-                               asp-action="Delete"
-                               asp-route-id="@item.Id"
-                               class="btn btn-sm btn-danger">
-                            Delete
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
 }
 else
 {
-    <p>No posts yet.</p>
-}
-<hr />
-
-<h3>My Offers</h3>
-
-@{
-    var offers = ViewBag.UserOffers as List<FixMyCar.Web.Models.Offer>;
+    <div class="text-muted">
+        No posts yet.
+    </div>
 }
 
-@if (offers != null && offers.Any())
+<h4 class="fw-semibold mt-5 mb-3">
+    My Offers
+</h4>
+
+@if (@Model.Offers != null && @Model.Offers.Any())
 {
-    <table class="table table-striped">
+    @foreach (var offer in @Model?.Offers)
+    {
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
 
-        <thead>
-            <tr>
-                <th>Price</th>
-                <th>Message</th>
-                <th>Post</th>
-                <th>Created</th>
-                <th></th>
-            </tr>
-        </thead>
+            <div class="card-body">
 
-        <tbody>
-            @foreach (var offer in offers)
-            {
-                <tr>
-                    <td>@offer.Price $</td>
-                    <td>@offer.Message</td>
-                    <td>@offer.Post?.Title</td>
-                    <td>@offer.CreatedAt</td>
+                <div class="d-flex justify-content-between">
 
-                    <td class="text-end">
+                    <div>
 
-                        <!-- View -->
+                        <h5 class="fw-bold mb-1">
+                            $@offer.Price
+                        </h5>
+
+                        <div class="text-muted mb-2">
+                            @offer.Post?.Title
+                        </div>
+
+                        <small class="text-muted">
+                            @offer.CreatedAt.ToString("dd MMM yyyy")
+                        </small>
+
+                    </div>
+
+                    <div class="d-flex gap-2">
+
                         <a asp-controller="Offer"
                                asp-action="Details"
                                asp-route-id="@offer.Id"
-                               class="btn btn-sm btn-info">
+                               class="btn btn-outline-dark btn-sm">
                             View
                         </a>
 
-                        <!-- Edit -->
                         <a asp-controller="Offer"
                                asp-action="Edit"
                                asp-route-id="@offer.Id"
-                               class="btn btn-sm btn-warning">
+                               class="btn btn-outline-secondary btn-sm">
                             Edit
                         </a>
 
-                        <!-- Delete -->
-                        <a asp-controller="Offer"
-                               asp-action="Delete"
-                               asp-route-id="@offer.Id"
-                               class="btn btn-sm btn-danger">
-                            Delete
-                        </a>
+                    </div>
 
-                    </td>
-                </tr>
-            }
-        </tbody>
+                </div>
 
-    </table>
+            </div>
+
+        </div>
+    }
 }
 else
 {
-    <p>No offers yet.</p>
+    <div class="text-muted">
+        No offers yet.
+    </div>
 }

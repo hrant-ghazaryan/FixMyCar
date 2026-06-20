@@ -120,4 +120,15 @@ public class CategoryController : Controller
         await _service.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }
+
+    /*public async Task<IActionResult> GetSubCategories(int parentId)
+    {
+        var categories = await _service.GetByParentIdAsync(parentId);
+
+        return Json(categories.Select(c => new
+        {
+            id = c.Id,
+            name = c.Name
+        }));
+    }*/
 }

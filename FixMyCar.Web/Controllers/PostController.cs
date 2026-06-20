@@ -33,7 +33,7 @@ public class PostController : Controller
     }
 
     // GET: /Post/Create
-    [Authorize(Roles ="User")]
+    [Authorize(Roles ="User,Admin")]
     [HttpGet]
     public async Task<IActionResult> Create()
     {

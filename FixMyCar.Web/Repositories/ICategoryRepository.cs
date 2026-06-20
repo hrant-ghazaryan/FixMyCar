@@ -11,4 +11,5 @@ public interface ICategoryRepository
     Task<List<Category>> GetAllAsync();
     Task<Category?> GetByAsync(int id);
     public Task<IEnumerable<Category>> GetAllChildrenAsync(int categoryId);
+    public Task<IEnumerable<Category>> GetByParentId(int parentId);
 }

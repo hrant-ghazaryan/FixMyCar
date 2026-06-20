@@ -4,7 +4,6 @@
 <div class="mb-5">
 
     <div class="d-flex flex-wrap justify-content-center gap-3">
-
         @foreach (var category in Model.Categories.Where(c => c.ParentId == null))
         {
             <a asp-controller="Category"
@@ -13,20 +12,15 @@
                    class="text-decoration-none">
 
                 <div class="card border-0 shadow-sm px-4 py-3 text-center category-card">
-
                     <h6 class="mb-0 fw-semibold">
                         @category.Name
                     </h6>
-
                 </div>
-
             </a>
         }
-
     </div>
-
 </div>
-<form method="get" class="mb-4">
+@* <form method="get" class="mb-4">
 
     <div class="input-group shadow-sm">
 
@@ -42,7 +36,7 @@
 
     </div>
 
-</form>
+</form> *@
 <style>
     html, body {
         scroll-behavior: auto !important; /* Անջատում ենք սահուն սքրոլը */
@@ -176,7 +170,7 @@
                                             <a asp-controller="Offer"
                                                    asp-action="Create"
                                                    asp-route-postId="@post.Id"
-                                                   class="btn btn-success btn-sm">
+                                                   class="btn btn-dark btn-sm">
                                                 Offer
                                             </a>
 
@@ -236,7 +230,8 @@
 
                                 <div class="d-flex gap-2">
 
-                                    <a asp-action="Details"
+                                    <a asp-controller="Post"
+                                        asp-action="Details"
                                            asp-route-id="@post.Id"
                                            class="btn btn-outline-dark btn-sm">
                                         Details
@@ -245,7 +240,7 @@
                                     <a asp-controller="Offer"
                                            asp-action="Create"
                                            asp-route-postId="@post.Id"
-                                           class="btn btn-success btn-sm">
+                                           class="btn btn-dark btn-sm">
                                         Offer
                                     </a>
 

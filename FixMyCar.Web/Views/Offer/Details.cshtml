@@ -18,9 +18,8 @@
     <p><b>Created:</b> @Model.CreatedAt</p>
 
 </div>
-<a asp-controller="Post"
-     asp-action="Details"
-     asp-route-id="@Model.PostId"
-     class="btn btn-secondary mt-3">
-     Back
-</a>
+<button type="button"
+        class="btn btn-secondary"
+        onclick="history.back()">
+    ← Back
+</button>

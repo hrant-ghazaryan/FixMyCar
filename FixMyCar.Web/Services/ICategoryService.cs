@@ -10,4 +10,6 @@ public interface ICategoryService
     Task UpdateAsync(Category category);
     Task DeleteAsync(int id);
     public Task<List<Category>> GetForUserAsync();
+    public Task<IEnumerable<Category>> GetByParentId(int parentId);
+
 }

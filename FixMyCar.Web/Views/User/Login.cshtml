@@ -1,27 +1,62 @@
-﻿<h2>Login</h2>
-
-<form asp-action="Login" method="post">
-
-    <div>
-        <label>Email</label>
-        <input name="email" />
-    </div>
-
-    <div>
-        <label>Password</label>
-        <input name="password" type="password" />
-    </div>
-
-    <button type="submit">Login</button>
-
-</form>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div style="color:red">
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <p>@error.ErrorMessage</p>
-        }
-    </div>
+﻿@{
+    ViewData["Title"] = "Login";
 }
+
+<div class="row justify-content-center mt-5">
+
+    <div class="col-md-4">
+
+        <h2 class="text-center mb-4 fw-semibold">
+            Login
+        </h2>
+
+        <form asp-action="Login" method="post">
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                <input name="email"
+                       type="email"
+                       class="form-control"
+                       placeholder="Enter your email" />
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="form-label">
+                    Password
+                </label>
+
+                <input name="password"
+                       type="password"
+                       class="form-control"
+                       placeholder="Enter your password" />
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-dark w-100">
+                Login
+            </button>
+
+        </form>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger mt-3">
+
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
