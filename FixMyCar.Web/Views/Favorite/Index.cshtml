@@ -1,0 +1,100 @@
+﻿@model List<Favorite>
+
+@{
+    ViewData["Title"] = "Favorites";
+}
+
+<div class="container py-4">
+
+    <h3 class="mb-4">
+        My Favorites
+    </h3>
+
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-light border">
+            No favorites yet
+        </div>
+    }
+    else
+    {
+
+        <div class="row">
+
+            @foreach (var item in Model)
+            {
+                var post = item.Post;
+
+                <div class="col-md-6 mb-3">
+
+                    <div class="card shadow-sm border-0 rounded-4">
+
+                        <div class="card-body">
+
+
+                            <div class="d-flex justify-content-between">
+
+                                <h5>
+                                    @post.Title
+                                </h5>
+
+
+                                <form asp-controller="Favorite"
+                                      asp-action="Toggle"
+                                      method="post">
+
+                                    <input type="hidden"
+                                           name="postId"
+                                           value="@post.Id" />
+
+
+                                    <button class="btn btn-sm btn-outline-dark">
+
+                                        ♥
+                                        
+                                    </button>
+
+                                </form>
+
+
+                            </div>
+
+
+                            <p class="text-muted">
+                                @(
+                                  post.Description.Length > 100
+                                  ? post.Description[..100] + "..."
+                                  : post.Description
+                                )
+                            </p>
+
+
+                            <div class="text-muted small mb-2">
+
+                                📍 @post.City
+
+                            </div>
+
+
+                            <a asp-controller="Post"
+                                   asp-action="Details"
+                                   asp-route-id="@post.Id"
+                                   class="btn btn-dark btn-sm">
+
+                                Details
+
+                            </a>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

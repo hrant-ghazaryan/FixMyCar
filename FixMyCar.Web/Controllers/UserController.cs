@@ -7,20 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FixMyCar.Web.Controllers;
 
-public class UserController : Controller
+public class UserController(IUserService userService, IPostService postService,
+    IOfferService offerService) : Controller
 {
-    private readonly IUserService _userService;
-    private readonly IPostService _postService;
-    private readonly IOfferService _offerService;
-
-
-    public UserController(IUserService userService, IPostService postService,
-        IOfferService offerService)
-    {
-        _userService = userService;
-        _postService = postService;
-        _offerService = offerService;
-    }
+    private readonly IUserService _userService = userService;
+    private readonly IPostService _postService = postService;
+    private readonly IOfferService _offerService = offerService;
 
     // =========================
     // REGISTER (GET)
@@ -142,5 +134,31 @@ public class UserController : Controller
         ViewBag.UserOffers = offers;
 
         return View(user);
+    }
+
+    public async Task<IActionResult> MyOffers()
+    {
+        var userId = int.Parse(
+            User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        );
+
+        var offers = await _offerService
+            .GetByUserIdAsync(userId);
+
+        return View(offers);
+    }
+
+    public async Task<IActionResult> Settings()
+    {
+        var userId = int.Parse(
+            User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        );
+
+        var userDetails = await _userService.GetByIdAsync(userId);
+
+        if (userDetails == null)
+            return NotFound();
+
+        return View(userDetails);
     }
 }

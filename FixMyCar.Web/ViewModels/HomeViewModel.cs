@@ -8,5 +8,5 @@ public class HomeViewModel
     public ICollection<Post> Posts { get; set; } = new List<Post>();
     public PaginationViewModel? Pagination { get; set; }
     public string? Search { get; set; }
-
+    public List<int> FavoritePostIds { get; set; } = new();
 }

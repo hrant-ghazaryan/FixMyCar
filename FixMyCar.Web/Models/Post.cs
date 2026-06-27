@@ -19,4 +19,6 @@ public class Post
 
     public ICollection<Offer> Offers { get; set; } = new List<Offer>();
     public ICollection<PostMedia> Media { get; set; } = new List<PostMedia>();
+    public ICollection<Favorite> Favorites { get; set; }
+    = new List<Favorite>();
 }

@@ -1,0 +1,52 @@
+﻿@model List<FixMyCar.Web.Models.Offer>
+
+<h3 class="fw-bold mb-4">
+    My Offers
+</h3>
+
+
+@if (!Model.Any())
+{
+    <div class="text-muted">
+        No offers yet.
+    </div>
+}
+else
+{
+    @foreach (var offer in Model)
+    {
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between">
+
+                    <div>
+
+                        <h5 class="fw-bold">
+                            $@offer.Price
+                        </h5>
+
+                        <div class="text-muted">
+                            @offer.Post?.Title
+                        </div>
+
+                        <small class="text-muted">
+                            @offer.CreatedAt.ToString("dd MMM yyyy")
+                        </small>
+
+                    </div>
+
+                    <a asp-controller="Offer"
+                           asp-action="Details"
+                           asp-route-id="@offer.Id"
+                           class="view-btn">
+                        View
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    }
+}

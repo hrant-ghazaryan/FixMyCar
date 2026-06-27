@@ -19,4 +19,6 @@ public class User
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 
     public ICollection<Offer> Offers { get; set; } = new List<Offer>();
+    public ICollection<Favorite> Favorites { get; set; }
+    = new List<Favorite>();
 }

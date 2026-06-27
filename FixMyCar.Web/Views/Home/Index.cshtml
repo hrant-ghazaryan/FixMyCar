@@ -20,23 +20,7 @@
         }
     </div>
 </div>
-@* <form method="get" class="mb-4">
 
-    <div class="input-group shadow-sm">
-
-        <input type="text"
-               name="search"
-               value="@Context.Request.Query["search"]"
-               class="form-control"
-               placeholder="Search posts..." />
-
-        <button class="btn btn-dark">
-            Search
-        </button>
-
-    </div>
-
-</form> *@
 <style>
     html, body {
         scroll-behavior: auto !important; /* Անջատում ենք սահուն սքրոլը */
@@ -173,6 +157,25 @@
                                                    class="btn btn-dark btn-sm">
                                                 Offer
                                             </a>
+                                            @if (User.Identity!.IsAuthenticated)
+                                            {
+                                                <form asp-controller="Favorite"
+                                                      asp-action="Toggle"
+                                                      method="post">
+
+                                                    <input type="hidden"
+                                                           name="postId"
+                                                           value="@post.Id" />
+
+                                                    <button type="submit"
+                                                            class="btn btn-outline-dark btn-sm">
+
+                                                        @(Model.FavoritePostIds.Contains(post.Id) ? "♥" : "♡")
+
+                                                    </button>
+
+                                                </form>
+                                            }
 
                                         </div>
 
@@ -243,7 +246,25 @@
                                            class="btn btn-dark btn-sm">
                                         Offer
                                     </a>
+                                    @if (User.Identity!.IsAuthenticated)
+                                    {
+                                        <form asp-controller="Favorite"
+                                              asp-action="Toggle"
+                                              method="post">
 
+                                            <input type="hidden"
+                                                   name="postId"
+                                                   value="@post.Id" />
+
+                                            <button type="submit"
+                                                    class="btn btn-outline-dark btn-sm">
+
+                                                @(Model.FavoritePostIds.Contains(post.Id) ? "♥" : "♡")
+
+                                            </button>
+
+                                        </form>
+                                    }
                                 </div>
 
                             </div>

@@ -2,161 +2,105 @@
 
 @{
     ViewData["Title"] = "Profile";
-    var posts = ViewBag.UserPosts as List<FixMyCar.Web.Models.Post>;
 }
 
-<h2>My Profile</h2>
+<h2 class="fw-bold mb-4">
+    My Profile
+</h2>
+
 
 <div class="card border-0 shadow-sm rounded-4 mb-4">
 
     <div class="card-body p-4">
 
-        <h3 class="fw-bold mb-1">
-            @(string.IsNullOrWhiteSpace(Model.UserName)
-                ? "User"
-                : Model.UserName)
-        </h3>
 
-        <p class="text-muted mb-3">
-            @Model.Email
-        </p>
+        <div class="d-flex justify-content-between align-items-start">
 
-        <div class="row small">
+            <div>
 
-            <div class="col-md-6">
-                📞 @(Model.PhoneNumber ?? "Not specified")
+                <h3 class="fw-bold mb-1">
+                    @(string.IsNullOrWhiteSpace(Model.UserName)
+                        ? "User"
+                        : Model.UserName)
+                </h3>
+
+
+                <p class="text-muted mb-3">
+                    @Model.Email
+                </p>
+
+
+                <div class="small text-muted">
+
+                    📞 @(Model.PhoneNumber ?? "Not specified")
+
+
+                    <span class="ms-4">
+                        📅 @Model.CreatedAt.ToString("dd MMM yyyy")
+                    </span>
+
+                </div>
+
             </div>
 
-            <div class="col-md-6 text-md-end">
-                📅 @Model.CreatedAt.ToString("dd MMM yyyy")
-            </div>
+
+            <a asp-controller="User"
+                   asp-action="Settings"
+                   class="btn btn-outline-dark btn-sm">
+
+                Edit
+
+            </a>
+
 
         </div>
+
 
     </div>
 
 </div>
 
-<h4 class="fw-semibold mb-3">
-    My Posts
-</h4>
 
-@if (posts != null && posts.Any())
-{
-    @foreach (var post in posts)
-    {
-        <div class="card border-0 shadow-sm rounded-4 mb-3">
+<div class="d-flex flex-wrap gap-2">
 
-            <div class="card-body">
 
-                <div class="d-flex justify-content-between">
+    <a asp-controller="User"
+           asp-action="Profile"
+           class="btn btn-dark rounded-pill px-4">
 
-                    <div>
+        My Posts
 
-                        <span class="badge bg-light text-dark border mb-2">
-                            @post.Category?.Name
-                        </span>
+    </a>
 
-                        <h5 class="fw-bold mb-1">
-                            @post.Title
-                        </h5>
 
-                        <div class="text-muted small">
-                            📍 @post.City
-                        </div>
 
-                    </div>
+    <a asp-controller="User"
+           asp-action="MyOffers"
+           class="btn btn-outline-dark rounded-pill px-4">
 
-                    <div class="d-flex gap-2 align-items-start">
+        My Offers
 
-                        <a asp-controller="Post"
-                               asp-action="Details"
-                               asp-route-id="@post.Id"
-                               class="btn btn-outline-dark btn-sm">
-                            View
-                        </a>
+    </a>
 
-                        <a asp-controller="Post"
-                               asp-action="Edit"
-                               asp-route-id="@post.Id"
-                               class="btn btn-outline-secondary btn-sm">
-                            Edit
-                        </a>
 
-                    </div>
 
-                </div>
+    <a asp-controller="Favorite"
+           asp-action="Index"
+           class="btn btn-outline-dark rounded-pill px-4">
 
-            </div>
+        Favorites
 
-        </div>
-    }
-}
-else
-{
-    <div class="text-muted">
-        No posts yet.
-    </div>
-}
+    </a>
 
-<h4 class="fw-semibold mt-5 mb-3">
-    My Offers
-</h4>
 
-@if (@Model.Offers != null && @Model.Offers.Any())
-{
-    @foreach (var offer in @Model?.Offers)
-    {
-        <div class="card border-0 shadow-sm rounded-4 mb-3">
 
-            <div class="card-body">
+    <a asp-controller="User"
+           asp-action="Settings"
+           class="btn btn-outline-secondary rounded-pill px-4">
 
-                <div class="d-flex justify-content-between">
+        Settings
 
-                    <div>
+    </a>
 
-                        <h5 class="fw-bold mb-1">
-                            $@offer.Price
-                        </h5>
 
-                        <div class="text-muted mb-2">
-                            @offer.Post?.Title
-                        </div>
-
-                        <small class="text-muted">
-                            @offer.CreatedAt.ToString("dd MMM yyyy")
-                        </small>
-
-                    </div>
-
-                    <div class="d-flex gap-2">
-
-                        <a asp-controller="Offer"
-                               asp-action="Details"
-                               asp-route-id="@offer.Id"
-                               class="btn btn-outline-dark btn-sm">
-                            View
-                        </a>
-
-                        <a asp-controller="Offer"
-                               asp-action="Edit"
-                               asp-route-id="@offer.Id"
-                               class="btn btn-outline-secondary btn-sm">
-                            Edit
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-    }
-}
-else
-{
-    <div class="text-muted">
-        No offers yet.
-    </div>
-}
+</div>

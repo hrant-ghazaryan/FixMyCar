@@ -5,19 +5,16 @@ using FixMyCar.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace FixMyCar.Web.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ICategoryService categoryService, IPostService postService,
+    IFavoriteService favoriteService) : Controller
 {
-    private readonly ICategoryService _categoryService;
-    private readonly IPostService _postService;
-
-    public HomeController(ICategoryService categoryService, IPostService postService)
-    {
-        _categoryService = categoryService;
-        _postService = postService;
-    }
+    private readonly ICategoryService _categoryService = categoryService;
+    private readonly IPostService _postService = postService;
+    private readonly IFavoriteService _favoriteService = favoriteService;
 
     public async Task<IActionResult> Index(int page = 1, string? search = null)
     {
@@ -32,6 +29,15 @@ public class HomeController : Controller
         // categories
         var categories = await _categoryService.GetAllAsync();
 
+        List<int> favoritePostIds = new();
+
+        if (User.Identity!.IsAuthenticated)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            favoritePostIds = await _favoriteService.GetFavoritePostIdsAsync(userId);
+        }
+
         var vm = new HomeViewModel
         {
             Posts = posts,
@@ -41,7 +47,8 @@ public class HomeController : Controller
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling(totalPosts / (double)pageSize),
                 BaseUrl = Url.Action("Index", "Home")
-            }
+            },
+            FavoritePostIds = favoritePostIds,
         };
 
         return View(vm);

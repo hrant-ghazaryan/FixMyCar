@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Offer> Offers { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<PostMedia> PostMedia { get; set; }
+    public DbSet<Favorite> Favorites { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -71,5 +72,23 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>()
             .HasIndex(u => u.PhoneNumber)
             .IsUnique();
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.User)
+            .WithMany(u => u.Favorites)
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Favorite>()
+            .HasOne(f => f.Post)
+            .WithMany(p => p.Favorites)
+            .HasForeignKey(f => f.PostId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Favorite>()
+            .HasIndex(f => new { f.UserId, f.PostId })
+            .IsUnique();
+
+
     }
 }
