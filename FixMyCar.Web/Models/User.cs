@@ -1,4 +1,4 @@
-﻿namespace FixMyCar.Web.Models;
+namespace FixMyCar.Web.Models;
 
 public class User
 {
@@ -21,4 +21,7 @@ public class User
     public ICollection<Offer> Offers { get; set; } = new List<Offer>();
     public ICollection<Favorite> Favorites { get; set; }
     = new List<Favorite>();
+
+    public ICollection<Review> ReviewsGiven { get; set; } = new List<Review>();
+    public ICollection<Review> ReviewsReceived { get; set; } = new List<Review>();
 }

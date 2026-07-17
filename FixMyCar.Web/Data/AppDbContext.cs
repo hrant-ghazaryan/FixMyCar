@@ -1,4 +1,4 @@
-﻿using FixMyCar.Web.Models;
+using FixMyCar.Web.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FixMyCar.Web.Data;
@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<PostMedia> PostMedia { get; set; }
     public DbSet<Favorite> Favorites { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,17 @@ public class AppDbContext : DbContext
             .HasIndex(f => new { f.UserId, f.PostId })
             .IsUnique();
 
+        // REVIEW RELATIONSHIPS
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.Reviewer)
+            .WithMany(u => u.ReviewsGiven)
+            .HasForeignKey(r => r.ReviewerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.TargetUser)
+            .WithMany(u => u.ReviewsReceived)
+            .HasForeignKey(r => r.TargetUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -8,22 +8,13 @@ using System.Security.Claims;
 
 namespace FixMyCar.Web.Controllers;
 
-public class PostController : Controller
+public class PostController(IPostService postService, ICategoryService categoryService,
+                      IUserService userService, IOfferService offerService) : Controller
 {
-    private readonly IPostService _postService;
-    private readonly ICategoryService _categoryService;
-    private readonly IUserService _userService;
-    private readonly IOfferService _offerService;
-
-
-    public PostController(IPostService postService,ICategoryService categoryService,
-                          IUserService userService, IOfferService offerService)
-    {
-        _postService = postService;
-        _categoryService = categoryService;
-        _userService = userService;
-        _offerService = offerService;
-    }
+    private readonly IPostService _postService = postService;
+    private readonly ICategoryService _categoryService = categoryService;
+    private readonly IUserService _userService = userService;
+    private readonly IOfferService _offerService = offerService;
 
     // GET: /Post
     public async Task<IActionResult> Index()
@@ -138,6 +129,7 @@ public class PostController : Controller
         var offers = await _offerService.GetByPostIdAsync(id);
 
         ViewBag.Offers = offers;
+        await _postService.IncrementViewCountAsync(id);
 
         return View(post);
     }

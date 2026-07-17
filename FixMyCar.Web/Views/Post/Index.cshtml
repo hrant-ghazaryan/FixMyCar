@@ -1,4 +1,4 @@
-﻿@model List<FixMyCar.Web.Models.Post>
+@model List<FixMyCar.Web.Models.Post>
 
 @{
     ViewData["Title"] = "Posts";
@@ -140,7 +140,8 @@
 
                                         <div class="d-flex gap-2">
 
-                                            <a asp-action="Details"
+                                            <a asp-controller="Post"
+                                                asp-action="Details"
                                                    asp-route-id="@post.Id"
                                                    class="btn btn-outline-dark btn-sm">
                                                 Details

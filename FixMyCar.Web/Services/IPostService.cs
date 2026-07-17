@@ -11,6 +11,7 @@ public interface IPostService
     Task DeleteAsync(int id);
     Task UpdateAsync(Post model);
     Task AddMediaAsync(PostMedia media);
+    Task IncrementViewCountAsync(int postId);
     Task<List<Post>> GetPagedAsync(int page, int pageSize, string? search);
     Task<int> GetCountAsync(string? search);
 }

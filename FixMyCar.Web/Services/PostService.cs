@@ -1,15 +1,12 @@
-﻿using FixMyCar.Web.Models;
+using FixMyCar.Web.Models;
 using FixMyCar.Web.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace FixMyCar.Web.Services;
 
-public class PostService : IPostService
+public class PostService(IPostRepository repo) : IPostService
 {
-    private readonly IPostRepository _repo;
-
-    public PostService(IPostRepository repo)
-        => _repo = repo;
+    private readonly IPostRepository _repo = repo;
 
     public async Task<List<Post>> GetAllAsync()
     {
@@ -53,7 +50,10 @@ public class PostService : IPostService
         => await _repo.GetByUserIdAsync(id);
 
     public async Task UpdateAsync(Post model)
-        => await _repo.UpdateAsync(model);
+    {
+        await _repo.UpdateAsync(model);
+        await _repo.SaveAsync();
+    }
 
     public async Task AddMediaAsync(PostMedia media)
     {
@@ -96,5 +96,11 @@ public class PostService : IPostService
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToList();
+    }
+
+    public async Task IncrementViewCountAsync(int postId)
+    {
+        await _repo.IncrementViewCountAsync(postId);
+        await _repo.SaveAsync();
     }
 }

@@ -4,6 +4,7 @@ using FixMyCar.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FixMyCar.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260704175612_AddPostViewCount")]
+    partial class AddPostViewCount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -191,40 +194,6 @@ namespace FixMyCar.Web.Migrations
                     b.ToTable("PostMedia");
                 });
 
-            modelBuilder.Entity("FixMyCar.Web.Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReviewerId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TargetUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReviewerId");
-
-                    b.HasIndex("TargetUserId");
-
-                    b.ToTable("Reviews");
-                });
-
             modelBuilder.Entity("FixMyCar.Web.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -349,25 +318,6 @@ namespace FixMyCar.Web.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("FixMyCar.Web.Models.Review", b =>
-                {
-                    b.HasOne("FixMyCar.Web.Models.User", "Reviewer")
-                        .WithMany("ReviewsGiven")
-                        .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("FixMyCar.Web.Models.User", "TargetUser")
-                        .WithMany("ReviewsReceived")
-                        .HasForeignKey("TargetUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reviewer");
-
-                    b.Navigation("TargetUser");
-                });
-
             modelBuilder.Entity("FixMyCar.Web.Models.Category", b =>
                 {
                     b.Navigation("Children");
@@ -391,10 +341,6 @@ namespace FixMyCar.Web.Migrations
                     b.Navigation("Offers");
 
                     b.Navigation("Posts");
-
-                    b.Navigation("ReviewsGiven");
-
-                    b.Navigation("ReviewsReceived");
                 });
 #pragma warning restore 612, 618
         }

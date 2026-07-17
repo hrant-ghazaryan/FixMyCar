@@ -1,4 +1,4 @@
-﻿using FixMyCar.Web.Models;
+using FixMyCar.Web.Models;
 
 namespace FixMyCar.Web.Services;
 
@@ -14,4 +14,6 @@ public interface IOfferService
     Task<List<Offer>> GetByUserIdAsync(int userId);
     Task DeleteAsync(int id);
     Task UpdateAsync(Offer offer);
+    Task AcceptOfferAsync(int offerId, int userId);
+    Task DeclineOfferAsync(int offerId, int userId);
 }

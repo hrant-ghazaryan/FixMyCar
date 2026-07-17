@@ -4,11 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FixMyCar.Web.Repositories;
 
-public class CategoryRepository : ICategoryRepository
+public class CategoryRepository(AppDbContext context) : ICategoryRepository
 {
-    private readonly AppDbContext _context;
-    public CategoryRepository(AppDbContext context)
-        => _context = context;
+    private readonly AppDbContext _context = context;
 
     public async Task AddAsync(Category category)
         => await _context.Categories.AddAsync(category);

@@ -12,7 +12,7 @@ public interface IPostRepository
     Task AddMediaAsync(PostMedia media);
     Task SaveAsync();
     Task UpdateAsync(Post model);
-
+    Task IncrementViewCountAsync(int postId);
     public Task<List<Post>> GetPagedAsync(int page, int pageSize);
     Task<int> GetCountAsync();
 }

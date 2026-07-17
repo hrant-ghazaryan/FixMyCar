@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using FixMyCar.Web.Models;
 using FixMyCar.Web.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -114,17 +114,32 @@ public class UserController(IUserService userService, IPostService postService,
     }
 
     // =========================
-    // PROFILE (current logged-in user)
+    // PROFILE (current logged-in user or specified user)
     // =========================
-    public async Task<IActionResult> Profile()
+    public async Task<IActionResult> Profile(int? id, [FromServices] IReviewService reviewService)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var loggedInUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        int targetUserId;
+        bool isOwnProfile = false;
 
-        if (userId == null)
-            return RedirectToAction("Login");
+        if (id == null)
+        {
+            if (loggedInUserIdStr == null)
+                return RedirectToAction("Login");
 
-        var user = await _userService.GetByIdAsync(int.Parse(userId));
+            targetUserId = int.Parse(loggedInUserIdStr);
+            isOwnProfile = true;
+        }
+        else
+        {
+            targetUserId = id.Value;
+            if (loggedInUserIdStr != null && int.Parse(loggedInUserIdStr) == targetUserId)
+            {
+                isOwnProfile = true;
+            }
+        }
 
+        var user = await _userService.GetByIdAsync(targetUserId);
         if (user == null)
             return NotFound();
 
@@ -133,7 +148,59 @@ public class UserController(IUserService userService, IPostService postService,
         var offers = await _offerService.GetByUserIdAsync(user.Id);
         ViewBag.UserOffers = offers;
 
+        // Fetch ratings and reviews
+        var reviews = await reviewService.GetReviewsForUserAsync(targetUserId);
+        var averageRating = await reviewService.GetAverageRatingForUserAsync(targetUserId);
+
+        ViewBag.Reviews = reviews;
+        ViewBag.AverageRating = averageRating;
+        ViewBag.IsOwnProfile = isOwnProfile;
+
+        // Check if current user can review
+        bool canLeaveReview = false;
+        if (!isOwnProfile && loggedInUserIdStr != null)
+        {
+            int reviewerId = int.Parse(loggedInUserIdStr);
+            var alreadyReviewed = await reviewService.HasUserReviewedAsync(reviewerId, targetUserId);
+            canLeaveReview = !alreadyReviewed;
+        }
+        ViewBag.CanLeaveReview = canLeaveReview;
+
         return View(user);
+    }
+
+    // =========================
+    // ADD REVIEW (POST)
+    // =========================
+    [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize]
+    public async Task<IActionResult> AddReview(int targetUserId, int rating, string comment, [FromServices] IReviewService reviewService)
+    {
+        var loggedInUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (loggedInUserIdStr == null)
+            return Challenge();
+
+        int reviewerId = int.Parse(loggedInUserIdStr);
+
+        var review = new Review
+        {
+            ReviewerId = reviewerId,
+            TargetUserId = targetUserId,
+            Rating = rating,
+            Comment = comment ?? string.Empty,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        try
+        {
+            await reviewService.AddReviewAsync(review);
+        }
+        catch (Exception ex)
+        {
+            TempData["ReviewError"] = ex.Message;
+        }
+
+        return RedirectToAction("Profile", new { id = targetUserId });
     }
 
     public async Task<IActionResult> MyOffers()

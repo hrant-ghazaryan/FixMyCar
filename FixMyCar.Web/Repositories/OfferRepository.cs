@@ -1,24 +1,25 @@
-﻿using FixMyCar.Web.Data;
+using FixMyCar.Web.Data;
 using FixMyCar.Web.Models;
 using FixMyCar.Web.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-public class OfferRepository : IOfferRepository
+public class OfferRepository(AppDbContext context) : IOfferRepository
 {
-    private readonly AppDbContext _context;
-
-    public OfferRepository(AppDbContext context)
-        => _context = context;
+    private readonly AppDbContext _context = context;
 
     public async Task<List<Offer>> GetAllAsync()
         => await _context.Offers.ToListAsync();
 
     public async Task<Offer?> GetByIdAsync(int id)
-        => await _context.Offers.FindAsync(id);
+        => await _context.Offers
+            .Include(o => o.Post)
+            .Include(o => o.User)
+            .FirstOrDefaultAsync(o => o.Id == id);
 
     public async Task<List<Offer>> GetByPostIdAsync(int postId)
         =>  await _context.Offers
             .Where(o => o.PostId == postId)
+            .Include(o => o.User)
             .ToListAsync();
 
     public async Task AddAsync(Offer offer)

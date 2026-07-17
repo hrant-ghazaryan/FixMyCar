@@ -4,12 +4,9 @@ using FixMyCar.Web.Repositories;
 
 namespace FixMyCar.Web.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService(ICategoryRepository repo) : ICategoryService
 {
-    private readonly ICategoryRepository _repo;
-
-    public CategoryService(ICategoryRepository repo)
-        => _repo = repo;
+    private readonly ICategoryRepository _repo = repo;
 
     public async Task<List<Category>> GetAllAsync()
         => await _repo.GetAllAsync();

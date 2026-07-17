@@ -5,12 +5,9 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FixMyCar.Web.Repositories;
 
-public class PostRepository : IPostRepository
+public class PostRepository(AppDbContext context) : IPostRepository
 {
-    private readonly AppDbContext _context;
-
-    public PostRepository(AppDbContext context)
-        => _context = context;
+    private readonly AppDbContext _context = context;
 
     public async Task<List<Post>> GetAllAsync()
         => await _context.Posts
@@ -59,4 +56,14 @@ public class PostRepository : IPostRepository
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
+
+    public async Task IncrementViewCountAsync(int postId)
+    {
+        var post = await _context.Posts.FindAsync(postId);
+
+        if (post == null)
+            return;
+
+        post.ViewCount++;
+    }
 }

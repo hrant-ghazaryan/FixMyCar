@@ -6,17 +6,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FixMyCar.Web.Controllers;
 
-public class CategoryController : Controller
+public class CategoryController(ICategoryService service, IPostService postservice) : Controller
 {
-    private readonly ICategoryService _service;
-    private readonly IPostService _postservice;
+    private readonly ICategoryService _service = service;
+    private readonly IPostService _postservice = postservice;
 
-
-    public CategoryController(ICategoryService service, IPostService postservice)
-    {
-        _service = service;
-        _postservice = postservice;
-    }
     // GET: /Category
     public async Task<IActionResult> Index()
     {

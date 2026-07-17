@@ -7,6 +7,7 @@ public class Post
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string? City { get; set; }
+    public int ViewCount { get; set; } 
 
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
