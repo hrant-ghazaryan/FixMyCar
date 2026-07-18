@@ -43,6 +43,10 @@ public class AppDbContext : DbContext
             .HasForeignKey(o => o.PostId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Offer>()
+            .Property(o => o.Price)
+            .HasPrecision(18, 2);
+
         // POST → CATEGORY (N:1)
         modelBuilder.Entity<Post>()
             .HasOne(p => p.Category)
