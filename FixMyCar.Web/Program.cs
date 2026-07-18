@@ -7,7 +7,10 @@ using FixMyCar.Web.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
+});
 
 // DB
 builder.Services.AddDbContext<AppDbContext>(options =>

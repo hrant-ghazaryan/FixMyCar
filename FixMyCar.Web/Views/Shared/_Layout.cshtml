@@ -113,9 +113,9 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="User" asp-action="Logout">
-                                    Logout
-                                </a>
+                                <form asp-controller="User" asp-action="Logout" method="post">
+                                    <button type="submit" class="nav-link text-dark border-0 bg-transparent">Logout</button>
+                                </form>
                             </li>
                         }
                         else

@@ -1,79 +1,18 @@
-﻿@{
+@model FixMyCar.Web.ViewModels.RegisterViewModel
+@{
     ViewData["Title"] = "Register";
 }
 
-<div class="row justify-content-center mt-5">
-
-    <div class="col-md-4">
-
-        <h2 class="text-center mb-1 fw-semibold">
-            Create Account
-        </h2>
-
-        <p class="text-center text-muted mb-4">
-            Join FixMyCar marketplace
-        </p>
-
-        <form asp-action="Register" method="post">
-
-            <div class="mb-3">
-
-                <label class="form-label">
-                    Email
-                </label>
-
-                <input name="Email"
-                       type="email"
-                       class="form-control"
-                       placeholder="Enter your email" />
-
-            </div>
-
-            <div class="mb-4">
-
-                <label class="form-label">
-                    Password
-                </label>
-
-                <input name="Password"
-                       type="password"
-                       class="form-control"
-                       placeholder="Create a password" />
-
-            </div>
-
-            <button type="submit"
-                    class="btn btn-dark w-100">
-                Create Account
-            </button>
-
-        </form>
-
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="alert alert-danger mt-3">
-
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <div>@error.ErrorMessage</div>
-                }
-
-            </div>
-        }
-
-        <div class="text-center mt-3">
-
-            <small class="text-muted">
-                Already have an account?
-            </small>
-
-            <a asp-action="Login"
-                   class="text-decoration-none">
-                Login
-            </a>
-
-        </div>
-
-    </div>
-
-</div>
+<div class="row justify-content-center mt-5"><div class="col-md-4">
+    <h2 class="text-center mb-4 fw-semibold">Create Account</h2>
+    <form asp-action="Register" method="post">
+        <div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" /><span asp-validation-for="Email" class="text-danger small"></span></div>
+        <div class="mb-3"><label asp-for="DisplayName" class="form-label"></label><input asp-for="DisplayName" class="form-control" /><span asp-validation-for="DisplayName" class="text-danger small"></span></div>
+        <div class="mb-3"><label asp-for="PhoneNumber" class="form-label"></label><input asp-for="PhoneNumber" class="form-control" /><span asp-validation-for="PhoneNumber" class="text-danger small"></span></div>
+        <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger small"></span></div>
+        <div class="mb-4"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" /><span asp-validation-for="ConfirmPassword" class="text-danger small"></span></div>
+        <button type="submit" class="btn btn-dark w-100">Create Account</button>
+    </form>
+    <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
+    <div class="text-center mt-3"><small class="text-muted">Already have an account? </small><a asp-action="Login">Login</a></div>
+</div></div>

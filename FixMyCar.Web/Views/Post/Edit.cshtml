@@ -1,57 +1,17 @@
-﻿@model FixMyCar.Web.Models.Post
-
+@model FixMyCar.Web.ViewModels.PostEditViewModel
 @{
     ViewData["Title"] = "Edit Post";
 }
 
 <h2 class="mb-3">Edit Post</h2>
-
 <form asp-action="Edit" method="post">
-
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="UserId" />
-
+    <input asp-for="Id" type="hidden" />
     <div class="row">
-
-        <!-- Title -->
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Title</label>
-            <input asp-for="Title" class="form-control" />
-        </div>
-
-        <!-- City -->
-        <div class="col-md-6 mb-3">
-            <label class="form-label">City</label>
-            <input asp-for="City" class="form-control" />
-        </div>
-
-        <!-- Category -->
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Category</label>
-
-            <select asp-for="CategoryId"
-                    class="form-select"
-                    asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))">
-                <option value="">-- Select Category --</option>
-            </select>
-        </div>
-
-        <!-- Description -->
-        <div class="col-12 mb-3">
-            <label class="form-label">Description</label>
-            <textarea asp-for="Description"
-                      class="form-control"
-                      rows="5"></textarea>
-        </div>
-
+        <div class="col-md-6 mb-3"><label asp-for="Title" class="form-label"></label><input asp-for="Title" class="form-control" /><span asp-validation-for="Title" class="text-danger small"></span></div>
+        <div class="col-md-6 mb-3"><label asp-for="City" class="form-label"></label><input asp-for="City" class="form-control" /><span asp-validation-for="City" class="text-danger small"></span></div>
+        <div class="col-md-6 mb-3"><label asp-for="CategoryId" class="form-label">Category</label><select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))"><option value="">-- Select Category --</option></select><span asp-validation-for="CategoryId" class="text-danger small"></span></div>
+        <div class="col-12 mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control" rows="5"></textarea><span asp-validation-for="Description" class="text-danger small"></span></div>
     </div>
-
-    <button type="submit" class="btn btn-success">
-        Save Changes
-    </button>
-
-    <a asp-action="Profile" asp-controller="User" class="btn btn-secondary">
-        Cancel
-    </a>
-
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a asp-controller="User" asp-action="Profile" class="btn btn-secondary">Cancel</a>
 </form>

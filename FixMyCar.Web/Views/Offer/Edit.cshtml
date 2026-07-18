@@ -1,33 +1,13 @@
-﻿@model FixMyCar.Web.Models.Offer
-
+@model FixMyCar.Web.ViewModels.OfferEditViewModel
 @{
     ViewData["Title"] = "Edit Offer";
 }
 
 <h2>Edit Offer</h2>
-
 <form asp-action="Edit" method="post">
-
-    <input type="hidden" asp-for="Id" />
-
-    <div class="mb-3">
-        <label>Price</label>
-        <input asp-for="Price" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label>Message</label>
-        <textarea asp-for="Message" class="form-control"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        Save
-    </button>
-
-    <a asp-controller="Profile"
-           asp-action="Index"
-           class="btn btn-secondary">
-        Cancel
-    </a>
-
+    <input asp-for="Id" type="hidden" />
+    <div class="mb-3"><label asp-for="Price"></label><input asp-for="Price" class="form-control" /><span asp-validation-for="Price" class="text-danger small"></span></div>
+    <div class="mb-3"><label asp-for="Message"></label><textarea asp-for="Message" class="form-control"></textarea><span asp-validation-for="Message" class="text-danger small"></span></div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-controller="User" asp-action="MyOffers" class="btn btn-secondary">Cancel</a>
 </form>

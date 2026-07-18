@@ -18,15 +18,20 @@ public class UserService(IUserRepository userRepository) : IUserService
 
     public async Task RegisterAsync(User user)
     {
+        user.Email = user.Email.Trim().ToLowerInvariant();
+
         var existingUser = await _userRepository.GetByEmailAsync(user.Email);
 
         if (existingUser != null)
             throw new Exception("Email already exists");
 
-        var existingPhone = await _userRepository.GetByPhoneAsync(user.PhoneNumber);
+        if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+        {
+            var existingPhone = await _userRepository.GetByPhoneAsync(user.PhoneNumber);
 
-        if (existingPhone != null)
-            throw new Exception("Phone already exists");
+            if (existingPhone != null)
+                throw new Exception("Phone already exists");
+        }
 
         // password hashing
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);

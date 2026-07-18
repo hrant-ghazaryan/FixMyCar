@@ -11,7 +11,7 @@ public interface IUserRepository
     Task<User?> GetByUserNameAsync(string userName);
 
     Task AddAsync(User user);
-    Task<User?> GetByPhoneAsync(string phoneNumber);
+    Task<User?> GetByPhoneAsync(string? phoneNumber);
     Task SaveAsync();
     Task<IEnumerable<User>> GetAllAsync();
 }

@@ -77,7 +77,10 @@
                         <input asp-for="Files"
                                type="file"
                                multiple
+                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                                class="form-control" />
+
+                        <span asp-validation-for="Files" class="text-danger small"></span>
 
                         <small class="text-muted">
                             You can upload multiple images

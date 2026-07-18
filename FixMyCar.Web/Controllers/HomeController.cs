@@ -46,7 +46,7 @@ public class HomeController(ICategoryService categoryService, IPostService postS
             {
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling(totalPosts / (double)pageSize),
-                BaseUrl = Url.Action("Index", "Home")
+                BaseUrl = Url.Action("Index", "Home") ?? "/"
             },
             FavoritePostIds = favoritePostIds,
         };

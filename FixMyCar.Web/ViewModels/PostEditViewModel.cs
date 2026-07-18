@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-
 using System.ComponentModel.DataAnnotations;
 
 namespace FixMyCar.Web.ViewModels;
 
-public class PostCreateViewModel
+public class PostEditViewModel
 {
+    [Required]
+    public int Id { get; set; }
+
     [Required, StringLength(120)]
     public string Title { get; set; } = string.Empty;
 
@@ -17,7 +18,4 @@ public class PostCreateViewModel
 
     [Range(1, int.MaxValue)]
     public int CategoryId { get; set; }
-
-    public List<SelectListItem> Categories { get; set; } = new();
-    public List<IFormFile>? Files { get; set; }
 }

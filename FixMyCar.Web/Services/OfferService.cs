@@ -25,33 +25,57 @@ public class OfferService(IOfferRepository repo) : IOfferService
         if (offer == null)
             throw new ArgumentNullException(nameof(offer));
 
+        if (offer.Price <= 0 || offer.Price > 100_000_000)
+            throw new ArgumentOutOfRangeException(nameof(offer.Price));
+
+        if (offer.Message.Length > 1_000)
+            throw new ArgumentException("Offer message is too long.");
+
         offer.CreatedAt = DateTime.UtcNow;
 
         await _repo.AddAsync(offer);
         await _repo.SaveAsync();
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id, int userId)
     {
         var offer = await _repo.GetByIdAsync(id);
 
         if (offer == null)
-            return;
+            throw new KeyNotFoundException("Offer not found.");
+
+        if (offer.UserId != userId)
+            throw new UnauthorizedAccessException("Only the offer author can delete it.");
+
+        if (offer.Status != OfferStatus.Pending)
+            throw new InvalidOperationException("Only pending offers can be deleted.");
 
         _repo.Delete(offer);
         await _repo.SaveAsync();
     }
     public async Task<List<Offer>> GetByUserIdAsync(int userId)
         =>  await _repo.GetByUserIdAsync(userId);
-    public async Task UpdateAsync(Offer offer)
+    public async Task UpdateAsync(int id, int userId, decimal price, string? message)
     {
-        var existing = await _repo.GetByIdAsync(offer.Id);
+        var existing = await _repo.GetByIdAsync(id);
 
         if (existing == null)
-            return;
+            throw new KeyNotFoundException("Offer not found.");
 
-        existing.Price = offer.Price;
-        existing.Message = offer.Message;
+        if (existing.UserId != userId)
+            throw new UnauthorizedAccessException("Only the offer author can edit it.");
+
+        if (existing.Status != OfferStatus.Pending)
+            throw new InvalidOperationException("Only pending offers can be edited.");
+
+        if (price <= 0 || price > 100_000_000)
+            throw new ArgumentOutOfRangeException(nameof(price));
+
+        if (message?.Length > 1_000)
+            throw new ArgumentException("Offer message is too long.");
+
+        existing.Price = price;
+        existing.Message = message?.Trim() ?? string.Empty;
 
         await _repo.SaveAsync();
     }

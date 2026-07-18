@@ -3,6 +3,7 @@ using FixMyCar.Web.Services;
 using FixMyCar.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FixMyCar.Web.Controllers;
 
@@ -23,6 +24,7 @@ public class CategoryController(ICategoryService service, IPostService postservi
         return View(parents);
     }
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create()
     {
         var categories = await _service.GetAllAsync();
@@ -60,6 +62,7 @@ public class CategoryController(ICategoryService service, IPostService postservi
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CategoryCreateViewModel vm)
     {
         if (!ModelState.IsValid)
@@ -77,6 +80,7 @@ public class CategoryController(ICategoryService service, IPostService postservi
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id)
     {
         var category = await _service.GetByIdAsync(id);
@@ -88,6 +92,7 @@ public class CategoryController(ICategoryService service, IPostService postservi
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(Category model)
     {
         if (!ModelState.IsValid)
@@ -98,6 +103,7 @@ public class CategoryController(ICategoryService service, IPostService postservi
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var category = await _service.GetByIdAsync(id);
@@ -109,6 +115,7 @@ public class CategoryController(ICategoryService service, IPostService postservi
     }
 
     [HttpPost, ActionName("Delete")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         await _service.DeleteAsync(id);

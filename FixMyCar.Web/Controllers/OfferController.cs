@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FixMyCar.Web.Models;
 using FixMyCar.Web.Services;
+using FixMyCar.Web.ViewModels;
 
 namespace FixMyCar.Web.Controllers;
 
@@ -13,6 +14,7 @@ public class OfferController(IOfferService offerService, IPostService postServic
     private readonly IPostService _postService = postService;
 
     // 📌 All offers (admin/debug)
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Index()
     {
         var offers = await _offerService.GetAllAsync();
@@ -22,6 +24,14 @@ public class OfferController(IOfferService offerService, IPostService postServic
     // 📌 Offers for specific post
     public async Task<IActionResult> ByPost(int postId)
     {
+        var post = await _postService.GetByIdAsync(postId);
+        if (post == null)
+            return NotFound();
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (post.UserId != userId && !User.IsInRole("Admin"))
+            return Forbid();
+
         var offers = await _offerService.GetByPostIdAsync(postId);
         ViewBag.PostId = postId;
         return View(offers);
@@ -57,8 +67,14 @@ public class OfferController(IOfferService offerService, IPostService postServic
 
     // 📌 Save offer (POST)
     [HttpPost]
-    public async Task<IActionResult> Create(int postId, decimal price, string? message)
+    public async Task<IActionResult> Create(int postId, OfferCreateViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.PostId = postId;
+            return View(model);
+        }
+
         var post = await _postService.GetByIdAsync(postId);
 
         if (post == null)
@@ -82,8 +98,8 @@ public class OfferController(IOfferService offerService, IPostService postServic
         {
             PostId = postId,
             UserId = userId,
-            Price = price,
-            Message = message ?? string.Empty
+            Price = model.Price,
+            Message = model.Message?.Trim() ?? string.Empty
         };
 
         await _offerService.CreateAsync(offer);
@@ -138,10 +154,34 @@ public class OfferController(IOfferService offerService, IPostService postServic
     }
 
     // 📌 Delete offer
-    public async Task<IActionResult> Delete(int id, int postId)
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
     {
-        await _offerService.DeleteAsync(id);
-        return RedirectToAction("ByPost", new { postId });
+        var offer = await _offerService.GetByIdAsync(id);
+        if (offer == null)
+            return NotFound();
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (offer.UserId != userId && !User.IsInRole("Admin"))
+            return Forbid();
+
+        return View(offer);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
+        {
+            await _offerService.DeleteAsync(id, userId);
+        }
+        catch (Exception ex) when (ex is KeyNotFoundException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            TempData["OfferError"] = ex.Message;
+        }
+
+        return RedirectToAction("MyOffers", "User");
     }
 
     public async Task<IActionResult> Details(int id)
@@ -151,7 +191,16 @@ public class OfferController(IOfferService offerService, IPostService postServic
         if (offer == null)
             return NotFound();
 
-        return View(offer);
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (offer.UserId != userId && !User.IsInRole("Admin"))
+            return Forbid();
+
+        return View(new OfferEditViewModel
+        {
+            Id = offer.Id,
+            Price = offer.Price,
+            Message = offer.Message
+        });
     }
 
     [HttpGet]
@@ -162,17 +211,30 @@ public class OfferController(IOfferService offerService, IPostService postServic
         if (offer == null)
             return NotFound();
 
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        if (offer.UserId != userId && offer.Post.UserId != userId && !User.IsInRole("Admin"))
+            return Forbid();
+
         return View(offer);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Offer offer)
+    public async Task<IActionResult> Edit(OfferEditViewModel model)
     {
         if (!ModelState.IsValid)
-            return View(offer);
+            return View(model);
 
-        await _offerService.UpdateAsync(offer);
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        try
+        {
+            await _offerService.UpdateAsync(model.Id, userId, model.Price, model.Message);
+        }
+        catch (Exception ex) when (ex is KeyNotFoundException or UnauthorizedAccessException or InvalidOperationException or ArgumentOutOfRangeException)
+        {
+            TempData["OfferError"] = ex.Message;
+            return RedirectToAction("MyOffers", "User");
+        }
 
-        return RedirectToAction("Index", "Profile");
+        return RedirectToAction("MyOffers", "User");
     }
 }

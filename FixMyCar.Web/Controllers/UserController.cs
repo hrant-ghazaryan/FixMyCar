@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using FixMyCar.Web.Models;
 using FixMyCar.Web.Services;
+using FixMyCar.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -27,16 +28,23 @@ public class UserController(IUserService userService, IPostService postService,
     // REGISTER (POST)
     // =========================
     [HttpPost]
-    public async Task<IActionResult> Register(User model, string password)
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
         if (!ModelState.IsValid)
             return View(model);
 
-        model.PasswordHash = password;
+        var user = new User
+        {
+            Email = model.Email.Trim().ToLowerInvariant(),
+            UserName = model.Email.Trim(),
+            DisplayName = model.DisplayName.Trim(),
+            PhoneNumber = string.IsNullOrWhiteSpace(model.PhoneNumber) ? null : model.PhoneNumber.Trim(),
+            PasswordHash = model.Password
+        };
 
         try
         {
-            await _userService.RegisterAsync(model);
+            await _userService.RegisterAsync(user);
         }
         catch (Exception ex)
         {
@@ -60,9 +68,12 @@ public class UserController(IUserService userService, IPostService postService,
     // LOGIN (POST)
     // =========================
     [HttpPost]
-    public async Task<IActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
-        var user = await _userService.GetByEmailAsync(email);
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var user = await _userService.GetByEmailAsync(model.Email.Trim().ToLowerInvariant());
 
         if (user == null)
         {
@@ -70,7 +81,7 @@ public class UserController(IUserService userService, IPostService postService,
             return View();
         }
 
-        bool isValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+        bool isValid = BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash);
 
         if (!isValid)
         {
@@ -107,6 +118,8 @@ public class UserController(IUserService userService, IPostService postService,
     // =========================
     // LOGOUT
     // =========================
+    [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -203,6 +216,7 @@ public class UserController(IUserService userService, IPostService postService,
         return RedirectToAction("Profile", new { id = targetUserId });
     }
 
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> MyOffers()
     {
         var userId = int.Parse(
@@ -215,6 +229,7 @@ public class UserController(IUserService userService, IPostService postService,
         return View(offers);
     }
 
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> Settings()
     {
         var userId = int.Parse(

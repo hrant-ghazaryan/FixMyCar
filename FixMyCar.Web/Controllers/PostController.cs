@@ -43,12 +43,34 @@ public class PostController(IPostService postService, ICategoryService categoryS
     }
 
     // POST: /Post/Create
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "User,Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(PostCreateViewModel vm)
     {
         if (!ModelState.IsValid)
+        {
+            vm.Categories = (await _categoryService.GetAllAsync()).Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList();
             return View(vm);
+        }
+
+        const long maxFileSize = 5 * 1024 * 1024;
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        if (vm.Files?.Count > 10 || vm.Files?.Any(file => file.Length == 0 || file.Length > maxFileSize ||
+            !allowedExtensions.Contains(Path.GetExtension(file.FileName).ToLowerInvariant()) ||
+            !file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase)) == true)
+        {
+            ModelState.AddModelError(nameof(vm.Files), "Upload up to 10 JPG, PNG, or WebP images, each no larger than 5 MB.");
+            vm.Categories = (await _categoryService.GetAllAsync()).Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            }).ToList();
+            return View(vm);
+        }
 
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -126,15 +148,17 @@ public class PostController(IPostService postService, ICategoryService categoryS
         if (post == null)
             return NotFound();
 
-        var offers = await _offerService.GetByPostIdAsync(id);
-
-        ViewBag.Offers = offers;
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        ViewBag.Offers = currentUserId != null && int.Parse(currentUserId) == post.UserId
+            ? await _offerService.GetByPostIdAsync(id)
+            : new List<Offer>();
         await _postService.IncrementViewCountAsync(id);
 
         return View(post);
     }
 
     // GET: /Post/Delete/5
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
@@ -153,6 +177,7 @@ public class PostController(IPostService postService, ICategoryService categoryS
 
 
     // POST: /Post/Delete/5
+    [Authorize]
     [HttpPost, ActionName("Delete")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
@@ -171,6 +196,7 @@ public class PostController(IPostService postService, ICategoryService categoryS
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize]
     public async Task<IActionResult> Edit(int id)
     {
         var post = await _postService.GetByIdAsync(id);
@@ -185,17 +211,40 @@ public class PostController(IPostService postService, ICategoryService categoryS
 
         ViewBag.Categories = await _categoryService.GetAllAsync();
 
-        return View(post);
+        return View(new PostEditViewModel
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Description = post.Description,
+            City = post.City,
+            CategoryId = post.CategoryId
+        });
     }
+    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Edit(Post model)
+    public async Task<IActionResult> Edit(PostEditViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Categories = await _categoryService.GetAllAsync();
+            return View(model);
+        }
+
+        var post = await _postService.GetByIdAsync(model.Id);
+        if (post == null)
+            return NotFound();
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (model.UserId != int.Parse(userId!))
+        if (post.UserId != int.Parse(userId!))
             return Forbid();
 
-        await _postService.UpdateAsync(model);
+        post.Title = model.Title.Trim();
+        post.Description = model.Description.Trim();
+        post.City = string.IsNullOrWhiteSpace(model.City) ? null : model.City.Trim();
+        post.CategoryId = model.CategoryId;
+
+        await _postService.UpdateAsync(post);
 
         return RedirectToAction("Profile", "User");
     }

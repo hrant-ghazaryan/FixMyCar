@@ -23,8 +23,13 @@ public class UserRepository(AppDbContext context) : IUserRepository
 
     public async Task SaveAsync()
         => await _context.SaveChangesAsync();
-    public async Task<User?> GetByPhoneAsync(string phoneNumber)
-    => await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+    public async Task<User?> GetByPhoneAsync(string? phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            return null;
+
+        return await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+    }
 
     public async Task<IEnumerable<User>> GetAllAsync()
         => await _context.Users.ToListAsync();

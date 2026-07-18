@@ -12,8 +12,8 @@ public interface IOfferService
 
     Task CreateAsync(Offer offer);
     Task<List<Offer>> GetByUserIdAsync(int userId);
-    Task DeleteAsync(int id);
-    Task UpdateAsync(Offer offer);
+    Task DeleteAsync(int id, int userId);
+    Task UpdateAsync(int id, int userId, decimal price, string? message);
     Task AcceptOfferAsync(int offerId, int userId);
     Task DeclineOfferAsync(int offerId, int userId);
 }

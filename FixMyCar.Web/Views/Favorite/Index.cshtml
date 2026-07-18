@@ -24,7 +24,10 @@
 
             @foreach (var item in Model)
             {
-                var post = item.Post;
+                if (item.Post is not { } post)
+                {
+                    continue;
+                }
 
                 <div class="col-md-6 mb-3">
 
