@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="FixMyCar.Web/FixMyCar.Web.csproj" />
+  <Project Path="FixMyCar.Web.Tests/FixMyCar.Web.Tests.csproj" />
 </Solution>

@@ -102,5 +102,9 @@ public class AppDbContext : DbContext
             .WithMany(u => u.ReviewsReceived)
             .HasForeignKey(r => r.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Review>()
+            .HasIndex(r => new { r.ReviewerId, r.TargetUserId })
+            .IsUnique();
     }
 }

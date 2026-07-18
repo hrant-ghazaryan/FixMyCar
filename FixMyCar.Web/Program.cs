@@ -46,9 +46,10 @@ builder.Services.AddScoped<IReviewService, ReviewService>();
 var app = builder.Build();
 
 // Pipeline
+app.UseExceptionHandler("/Home/Error");
+
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -56,6 +57,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseStatusCodePagesWithReExecute("/Home/StatusCodePage", "?statusCode={0}");
 
 // 🔐 ORDER IS IMPORTANT
 app.UseAuthentication();
