@@ -3,9 +3,10 @@ using FixMyCar.Web.Repositories;
 
 namespace FixMyCar.Web.Services;
 
-public class ReviewService(IReviewRepository reviewRepository) : IReviewService
+public class ReviewService(IReviewRepository reviewRepository, INotificationService? notificationService = null) : IReviewService
 {
     private readonly IReviewRepository _reviewRepository = reviewRepository;
+    private readonly INotificationService? _notificationService = notificationService;
 
     public async Task AddReviewAsync(Review review)
     {
@@ -21,6 +22,12 @@ public class ReviewService(IReviewRepository reviewRepository) : IReviewService
 
         await _reviewRepository.AddAsync(review);
         await _reviewRepository.SaveAsync();
+
+        // 🔔 Send notification to target user
+        if (_notificationService != null)
+        {
+            await _notificationService.CreateReviewAddedNotificationAsync(review);
+        }
     }
 
     public Task<List<Review>> GetReviewsForUserAsync(int targetUserId)

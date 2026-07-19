@@ -24,4 +24,6 @@ public class User
 
     public ICollection<Review> ReviewsGiven { get; set; } = new List<Review>();
     public ICollection<Review> ReviewsReceived { get; set; } = new List<Review>();
+
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

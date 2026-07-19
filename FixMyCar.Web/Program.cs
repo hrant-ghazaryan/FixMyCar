@@ -3,6 +3,7 @@ using FixMyCar.Web.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FixMyCar.Web.Services;
 using FixMyCar.Web.Repositories;
+using FixMyCar.Web.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.WriteIndented = true;
 });
+
+// SignalR
+builder.Services.AddSignalR();
 
 // DB
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -42,6 +50,8 @@ builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var app = builder.Build();
 
@@ -67,5 +77,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// 🔔 SignalR Hub
+app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

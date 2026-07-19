@@ -1,6 +1,5 @@
 using FixMyCar.Web.Models;
 using FixMyCar.Web.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace FixMyCar.Web.Services;
 

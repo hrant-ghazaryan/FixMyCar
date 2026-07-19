@@ -3,9 +3,10 @@ using FixMyCar.Web.Repositories;
 
 namespace FixMyCar.Web.Services;
 
-public class OfferService(IOfferRepository repo) : IOfferService
+public class OfferService(IOfferRepository repo, INotificationService? notificationService = null) : IOfferService
 {
     private readonly IOfferRepository _repo = repo;
+    private readonly INotificationService? _notificationService = notificationService;
 
     public async Task<List<Offer>> GetAllAsync()
     {
@@ -35,6 +36,12 @@ public class OfferService(IOfferRepository repo) : IOfferService
 
         await _repo.AddAsync(offer);
         await _repo.SaveAsync();
+
+        // 🔔 Send notification to post owner
+        if (_notificationService != null)
+        {
+            await _notificationService.CreateOfferCreatedNotificationAsync(offer);
+        }
     }
 
     public async Task DeleteAsync(int id, int userId)
@@ -101,12 +108,27 @@ public class OfferService(IOfferRepository repo) : IOfferService
 
         // Reject all other pending offers for this post
         var allOffers = await _repo.GetByPostIdAsync(offer.PostId);
+        var rejectedOffers = new List<Offer>();
         foreach (var other in allOffers.Where(o => o.Id != offerId && o.Status == OfferStatus.Pending))
         {
             other.Status = OfferStatus.Rejected;
+            rejectedOffers.Add(other);
         }
 
         await _repo.SaveAsync();
+
+        // 🔔 Send notifications
+        if (_notificationService != null)
+        {
+            // Notify the accepted offer creator
+            await _notificationService.CreateOfferAcceptedNotificationAsync(offer);
+            
+            // Notify all rejected offer creators
+            foreach (var rejectedOffer in rejectedOffers)
+            {
+                await _notificationService.CreateOfferRejectedNotificationAsync(rejectedOffer);
+            }
+        }
     }
 
     public async Task DeclineOfferAsync(int offerId, int userId)
@@ -125,5 +147,11 @@ public class OfferService(IOfferRepository repo) : IOfferService
         offer.Status = OfferStatus.Rejected;
 
         await _repo.SaveAsync();
+
+        // 🔔 Send notification to declined offer creator
+        if (_notificationService != null)
+        {
+            await _notificationService.CreateOfferRejectedNotificationAsync(offer);
+        }
     }
 }

@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<PostMedia> PostMedia { get; set; }
     public DbSet<Favorite> Favorites { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -110,5 +111,34 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Review>()
             .HasIndex(r => new { r.ReviewerId, r.TargetUserId })
             .IsUnique();
+
+        // NOTIFICATION RELATIONSHIPS
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.User)
+            .WithMany(u => u.Notifications)
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.RelatedOffer)
+            .WithMany()
+            .HasForeignKey(n => n.RelatedOfferId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.RelatedPost)
+            .WithMany()
+            .HasForeignKey(n => n.RelatedPostId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne(n => n.RelatedUser)
+            .WithMany()
+            .HasForeignKey(n => n.RelatedUserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // INDEX for performance
+        modelBuilder.Entity<Notification>()
+            .HasIndex(n => new { n.UserId, n.IsRead, n.CreatedAt });
     }
 }
