@@ -1,83 +1,52 @@
 ﻿@using FixMyCar.Web.ViewModels
 @model HomeViewModel
 
-<div class="mb-5">
+<section class="home-hero">
+    <div class="container">
+        <div class="hero-copy">
+            <p class="eyebrow">Մեքենաների սպասարկման հարթակ</p>
+            <h1>Գտեք ճիշտ մասնագետին<br />ձեր մեքենայի համար</h1>
+            <p>Նկարագրեք խնդիրը, ստացեք առաջարկներ և ընտրեք հարմար տարբերակը։</p>
+        </div>
+        <form method="get" asp-controller="Home" asp-action="Index" class="home-search">
+            <div class="search-field">
+                <span>⌕</span>
+                <input type="text" name="search" value="@Context.Request.Query["search"]" placeholder="Ի՞նչ խնդիր ունի մեքենան" />
+            </div>
+            <button type="submit" class="btn search-submit">Որոնել</button>
+        </form>
+    </div>
+</section>
 
-    <div class="d-flex flex-wrap justify-content-center gap-3">
+<section class="container category-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Արագ ընտրություն</p>
+            <h2>Ընտրեք ծառայությունը</h2>
+        </div>
+        <a asp-controller="Category" asp-action="Index">Բոլոր կատեգորիաները →</a>
+    </div>
+    <div class="category-grid">
         @foreach (var category in Model.Categories.Where(c => c.ParentId == null))
         {
-            <a asp-controller="Category"
-                   asp-action="SubCategories"
-                   asp-route-parentId="@category.Id"
-                   class="text-decoration-none">
-
-                <div class="card border-0 shadow-sm px-4 py-3 text-center category-card">
-                    <h6 class="mb-0 fw-semibold">
-                        @category.Name
-                    </h6>
-                </div>
+            <a asp-controller="Category" asp-action="SubCategories" asp-route-parentId="@category.Id" class="category-card">
+                <span class="category-icon">🔧</span>
+                <span>@category.Name</span>
             </a>
         }
     </div>
-</div>
+</section>
 
-<style>
-    html, body {
-        scroll-behavior: auto !important; /* Անջատում ենք սահուն սքրոլը */
-    }
-
-    /* Էջը սկզբից լրիվ թաքցնում ենք */
-    .invisible-load {
-        opacity: 0 !important;
-        visibility: hidden !important;
-    }
-
-    /* Ակնթարթորեն ցույց տալու կլաս */
-    .visible-load {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transition: none !important;
-    }
-</style>
-
-<script>
-    if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-    }
-
-    // Անմիջապես թաքցնում ենք էջը, հենց բրաուզերը սկսում է կարդալ HTML-ը
-    document.documentElement.classList.add('invisible-load');
-
-    // Ֆունկցիա, որը կատարում է սքրոլը և ցույց տալիս էջը
-    function handleScrollRestoration() {
-        const scroll = sessionStorage.getItem("postScroll");
-
-        if (scroll !== null) {
-            window.scrollTo(0, Number(scroll));
-        }
-
-        // Սպասում ենք 20մվ, որ սքրոլը «կադրից դուրս» կատարվի, նոր լույսերը միացնենք
-        setTimeout(() => {
-            document.documentElement.classList.remove('invisible-load');
-            document.documentElement.classList.add('visible-load');
-        }, 20);
-    }
-
-    // Այս իրադարձությունը աշխատում է թե՛ Back տալուց, թե՛ ուղիղ հղումով Index գալուց
-    document.addEventListener("DOMContentLoaded", handleScrollRestoration);
-    window.addEventListener("pageshow", handleScrollRestoration);
-
-    // Սքրոլի դիրքը պահում ենք միայն այն ժամանակ, երբ գնում ենք Details
-    function saveScrollPosition() {
-        sessionStorage.setItem("postScroll", window.scrollY);
-    }
-</script>
-
-<div class="container py-4">
-
+<section class="container posts-section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Թարմ ավելացված</p>
+            <h2>Վերջին հարցումներ</h2>
+        </div>
+        <a asp-controller="Post" asp-action="Index">Դիտել բոլորը →</a>
+    </div>
     <div class="row justify-content-center">
-
-        <div class="col-xl-8 col-lg-9">
+        <div class="col-xl-9 col-lg-10">
 
             @foreach (var post in Model.Posts)
             {
@@ -89,9 +58,7 @@
                 {
                     <!-- POST WITH IMAGE -->
 
-                    <div class="card border-0 shadow-sm rounded-4 mb-3">
-
-                        <div class="card-body">
+                    <article class="post-card">
 
                             <div class="d-flex gap-3 align-items-start">
 
@@ -103,8 +70,7 @@
                                            class="flex-shrink-0">
 
                                         <img src="@Url.Content(mainImage.FilePath)"
-                                             style="width:140px; height:110px; object-fit:cover;"
-                                             class="rounded-3" />
+                                             class="post-thumbnail" />
                                     </a>
                                 }
 
@@ -115,23 +81,23 @@
 
                                         <div>
 
-                                            <span class="badge bg-light text-dark border mb-1">
+                                            <span class="post-category">
                                                 @post.Category?.Name
                                             </span>
 
-                                            <h5 class="fw-bold mb-1">
+                                            <h3 class="post-title">
                                                 @post.Title
-                                            </h5>
+                                            </h3>
 
                                         </div>
 
                                         <small class="text-muted">
-                                            @post.CreatedAt.ToString("dd MMM")
+                                            @post.CreatedAt.ToString("dd MMM, HH:mm")
                                         </small>
 
                                     </div>
 
-                                    <p class="text-muted mb-2">
+                                    <p class="post-description">
                                         @(post.Description.Length > 120
                                             ? post.Description[..120] + "..."
                                             : post.Description)
@@ -139,7 +105,7 @@
 
                                     <div class="d-flex justify-content-between align-items-center">
 
-                                        <div class="text-muted small">
+                                        <div class="post-meta">
                                             📍 @post.City
                                         </div>
 
@@ -148,15 +114,15 @@
                                             <a asp-controller="Post"
                                                 asp-action="Details"
                                                    asp-route-id="@post.Id"
-                                                   class="btn btn-outline-dark btn-sm">
-                                                Details
+                                                   class="btn post-secondary-action">
+                                                Դիտել
                                             </a>
 
                                             <a asp-controller="Offer"
                                                    asp-action="Create"
                                                    asp-route-postId="@post.Id"
-                                                   class="btn btn-dark btn-sm">
-                                                Offer
+                                                   class="btn post-primary-action">
+                                                Առաջարկել գին
                                             </a>
                                             @if (User.Identity!.IsAuthenticated)
                                             {
@@ -169,7 +135,7 @@
                                                            value="@post.Id" />
 
                                                     <button type="submit"
-                                                            class="btn btn-outline-dark btn-sm">
+                                                            class="btn post-secondary-action favorite-action">
 
                                                         @(Model.FavoritePostIds.Contains(post.Id) ? "♥" : "♡")
 
@@ -186,39 +152,35 @@
 
                             </div>
 
-                        </div>
-
-                    </div>
+                    </article>
                 }
                 else
                 {
                     <!-- POST WITHOUT IMAGE -->
 
-                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <article class="post-card">
 
-                        <div class="card-body">
-
-                            <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
 
                                 <div>
 
-                                    <span class="badge bg-light text-dark border mb-2">
+                                    <span class="post-category">
                                         @post.Category?.Name
                                     </span>
 
-                                    <h5 class="fw-bold mb-1">
+                                    <h3 class="post-title">
                                         @post.Title
-                                    </h5>
+                                    </h3>
 
                                 </div>
 
                                 <small class="text-muted">
-                                    @post.CreatedAt.ToString("dd MMM yyyy")
+                                    @post.CreatedAt.ToString("dd MMM, HH:mm")
                                 </small>
 
                             </div>
 
-                            <p class="text-muted mb-3">
+                            <p class="post-description">
 
                                 @(post.Description.Length > 120
                                     ? post.Description[..120] + "..."
@@ -228,7 +190,7 @@
 
                             <div class="d-flex justify-content-between align-items-center">
 
-                                <div class="text-muted small">
+                                <div class="post-meta">
                                     📍 @post.City
                                 </div>
 
@@ -237,15 +199,15 @@
                                     <a asp-controller="Post"
                                         asp-action="Details"
                                            asp-route-id="@post.Id"
-                                           class="btn btn-outline-dark btn-sm">
-                                        Details
+                                           class="btn post-secondary-action">
+                                        Դիտել
                                     </a>
 
                                     <a asp-controller="Offer"
                                            asp-action="Create"
                                            asp-route-postId="@post.Id"
-                                           class="btn btn-dark btn-sm">
-                                        Offer
+                                           class="btn post-primary-action">
+                                        Առաջարկել գին
                                     </a>
                                     @if (User.Identity!.IsAuthenticated)
                                     {
@@ -258,7 +220,7 @@
                                                    value="@post.Id" />
 
                                             <button type="submit"
-                                                    class="btn btn-outline-dark btn-sm">
+                                                    class="btn post-secondary-action favorite-action">
 
                                                 @(Model.FavoritePostIds.Contains(post.Id) ? "♥" : "♡")
 
@@ -270,9 +232,7 @@
 
                             </div>
 
-                        </div>
-
-                    </div>
+                    </article>
                 }
             }
 
@@ -280,6 +240,6 @@
 
     </div>
 
-</div>
+</section>
 <partial name="_Pagination"
          model="Model.Pagination" />

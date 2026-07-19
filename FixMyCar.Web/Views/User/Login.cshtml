@@ -1,14 +1,38 @@
 @model FixMyCar.Web.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Մուտք";
 }
 
-<div class="row justify-content-center mt-5"><div class="col-md-4">
-    <h2 class="text-center mb-4 fw-semibold">Login</h2>
-    <form asp-action="Login" method="post">
-        <div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" /><span asp-validation-for="Email" class="text-danger small"></span></div>
-        <div class="mb-4"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger small"></span></div>
-        <button type="submit" class="btn btn-dark w-100">Login</button>
-    </form>
-    <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
-</div></div>
+<section class="auth-page">
+    <div class="auth-card auth-card-compact">
+        <div class="auth-heading">
+            <p class="eyebrow">FixMyCar</p>
+            <h1>Բարի վերադարձ</h1>
+            <p>Մուտք գործեք՝ ձեր հարցումներն ու առաջարկները տեսնելու համար։</p>
+        </div>
+
+        <form asp-action="Login" method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Էլ․ փոստ</label>
+                <input asp-for="Email" class="form-control" placeholder="name@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">Գաղտնաբառ</label>
+                <input asp-for="Password" class="form-control" placeholder="Մուտքագրեք գաղտնաբառը" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn auth-submit w-100">Մուտք գործել</button>
+        </form>
+
+        <p class="auth-switch">Դեռ հաշիվ չունե՞ք։ <a asp-action="Register">Գրանցվել</a></p>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,240 +1,59 @@
 @model List<FixMyCar.Web.Models.Post>
 
 @{
-    ViewData["Title"] = "Posts";
+    ViewData["Title"] = "Հարցումներ";
 }
 
-<style>
-    html, body {
-        scroll-behavior: auto !important; /* Անջատում ենք սահուն սքրոլը */
+<section class="posts-page container py-4">
+    <header class="posts-page-heading">
+        <div>
+            <p class="eyebrow">FixMyCar marketplace</p>
+            <h1>Բոլոր հարցումները</h1>
+            <p>Գտեք ձեզ հարմար աշխատանքը և ուղարկեք առաջարկ։</p>
+        </div>
+        <a asp-action="Create" class="btn request-publish">+ Տեղադրել հարցում</a>
+    </header>
+
+    @if (!Model.Any())
+    {
+        <div class="posts-empty">
+            <h2>Այս պահին հարցումներ չկան</h2>
+            <p>Դուք կարող եք առաջինը տեղադրել ձեր մեքենայի խնդիրը։</p>
+            <a asp-action="Create" class="btn auth-submit">Տեղադրել հարցում</a>
+        </div>
     }
-
-    /* Էջը սկզբից լրիվ թաքցնում ենք */
-    .invisible-load {
-        opacity: 0 !important;
-        visibility: hidden !important;
-    }
-
-    /* Ակնթարթորեն ցույց տալու կլաս */
-    .visible-load {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transition: none !important;
-    }
-</style>
-
-<script>
-    if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
-    }
-
-    // Անմիջապես թաքցնում ենք էջը, հենց բրաուզերը սկսում է կարդալ HTML-ը
-    document.documentElement.classList.add('invisible-load');
-
-    // Ֆունկցիա, որը կատարում է սքրոլը և ցույց տալիս էջը
-    function handleScrollRestoration() {
-        const scroll = sessionStorage.getItem("postScroll");
-
-        if (scroll !== null) {
-            window.scrollTo(0, Number(scroll));
-        }
-
-        // Սպասում ենք 20մվ, որ սքրոլը «կադրից դուրս» կատարվի, նոր լույսերը միացնենք
-        setTimeout(() => {
-            document.documentElement.classList.remove('invisible-load');
-            document.documentElement.classList.add('visible-load');
-        }, 20);
-    }
-
-    // Այս իրադարձությունը աշխատում է թե՛ Back տալուց, թե՛ ուղիղ հղումով Index գալուց
-    document.addEventListener("DOMContentLoaded", handleScrollRestoration);
-    window.addEventListener("pageshow", handleScrollRestoration);
-
-    // Սքրոլի դիրքը պահում ենք միայն այն ժամանակ, երբ գնում ենք Details
-    function saveScrollPosition() {
-        sessionStorage.setItem("postScroll", window.scrollY);
-    }
-</script>
-
-<div class="container py-4">
-
-    <div class="text-center mb-5">
-
-        <h1 class="fw-bold">
-            🚗 FixMyCar Marketplace
-        </h1>
-
-        <p class="text-muted mb-0">
-            Browse car repair requests and submit your offers
-        </p>
-
-    </div>
-
-    <div class="row justify-content-center">
-
-        <div class="col-xl-8 col-lg-9">
-
+    else
+    {
+        <div class="posts-feed">
             @foreach (var post in Model)
             {
-                var mainImage = post.Media?
-                    .FirstOrDefault(m => m.IsMain)
-                    ?? post.Media?.FirstOrDefault();
-
-                @if (mainImage != null)
-                {
-                    <!-- POST WITH IMAGE -->
-
-                    <div class="card border-0 shadow-sm rounded-4 mb-3">
-
-                        <div class="card-body">
-
-                            <div class="d-flex gap-3 align-items-start">
-
-                                <!-- LEFT: IMAGE -->
-                                @if (mainImage != null)
-                                {
-                                    <a asp-action="Details"
-                                           asp-route-id="@post.Id"
-                                           class="flex-shrink-0">
-
-                                        <img src="@Url.Content(mainImage.FilePath)"
-                                             style="width:140px; height:110px; object-fit:cover;"
-                                             class="rounded-3" />
-                                    </a>
-                                }
-
-                                <!-- RIGHT: CONTENT -->
-                                <div class="flex-grow-1">
-
-                                    <div class="d-flex justify-content-between align-items-start">
-
-                                        <div>
-
-                                            <span class="badge bg-light text-dark border mb-1">
-                                                @post.Category?.Name
-                                            </span>
-
-                                            <h5 class="fw-bold mb-1">
-                                                @post.Title
-                                            </h5>
-
-                                        </div>
-
-                                        <small class="text-muted">
-                                            @post.CreatedAt.ToString("dd MMM")
-                                        </small>
-
-                                    </div>
-
-                                    <p class="text-muted mb-2">
-                                        @(post.Description.Length > 120
-                                            ? post.Description[..120] + "..."
-                                            : post.Description)
-                                    </p>
-
-                                    <div class="d-flex justify-content-between align-items-center">
-
-                                        <div class="text-muted small">
-                                            📍 @post.City
-                                        </div>
-
-                                        <div class="d-flex gap-2">
-
-                                            <a asp-controller="Post"
-                                                asp-action="Details"
-                                                   asp-route-id="@post.Id"
-                                                   class="btn btn-outline-dark btn-sm">
-                                                Details
-                                            </a>
-
-                                            <a asp-controller="Offer"
-                                                   asp-action="Create"
-                                                   asp-route-postId="@post.Id"
-                                                   class="btn btn-dark btn-sm">
-                                                Offer
-                                            </a>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
+                var mainImage = post.Media?.FirstOrDefault(m => m.IsMain) ?? post.Media?.FirstOrDefault();
+                <article class="marketplace-post-card">
+                    @if (mainImage != null)
+                    {
+                        <a asp-action="Details" asp-route-id="@post.Id" class="marketplace-post-image-link">
+                            <img src="@Url.Content(mainImage.FilePath)" class="marketplace-post-image" alt="@post.Title" />
+                        </a>
+                    }
+                    <div class="marketplace-post-body">
+                        <div class="marketplace-post-top">
+                            <div>
+                                <span class="post-category">@post.Category?.Name</span>
+                                <h2>@post.Title</h2>
                             </div>
-
+                            <time>@post.CreatedAt.ToString("dd MMM, HH:mm")</time>
                         </div>
-
-                    </div>
-                }
-                else
-                {
-                    <!-- POST WITHOUT IMAGE -->
-
-                    <div class="card border-0 shadow-sm rounded-4 mb-3">
-
-                        <div class="card-body">
-
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-
-                                <div>
-
-                                    <span class="badge bg-light text-dark border mb-2">
-                                        @post.Category?.Name
-                                    </span>
-
-                                    <h5 class="fw-bold mb-1">
-                                        @post.Title
-                                    </h5>
-
-                                </div>
-
-                                <small class="text-muted">
-                                    @post.CreatedAt.ToString("dd MMM yyyy")
-                                </small>
-
+                        <p>@(post.Description.Length > 160 ? post.Description[..160] + "..." : post.Description)</p>
+                        <footer>
+                            <span class="marketplace-post-location">@post.City</span>
+                            <div class="marketplace-post-actions">
+                                <a asp-action="Details" asp-route-id="@post.Id" class="btn post-secondary-action">Դիտել</a>
+                                <a asp-controller="Offer" asp-action="Create" asp-route-postId="@post.Id" class="btn post-primary-action">Առաջարկել գին</a>
                             </div>
-
-                            <p class="text-muted mb-3">
-
-                                @(post.Description.Length > 120
-                                    ? post.Description[..120] + "..."
-                                    : post.Description)
-
-                            </p>
-
-                            <div class="d-flex justify-content-between align-items-center">
-
-                                <div class="text-muted small">
-                                    📍 @post.City
-                                </div>
-
-                                <div class="d-flex gap-2">
-
-                                    <a asp-action="Details"
-                                           asp-route-id="@post.Id"
-                                           class="btn btn-outline-dark btn-sm">
-                                        Details
-                                    </a>
-
-                                    <a asp-controller="Offer"
-                                           asp-action="Create"
-                                           asp-route-postId="@post.Id"
-                                           class="btn btn-dark btn-sm">
-                                        Offer
-                                    </a>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+                        </footer>
                     </div>
-                }
+                </article>
             }
-
         </div>
-
-    </div>
-
-</div>
+    }
+</section>

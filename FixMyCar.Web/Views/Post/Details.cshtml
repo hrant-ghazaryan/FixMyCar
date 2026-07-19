@@ -3,7 +3,7 @@
 @using System.Security.Claims
 
 @{
-    ViewData["Title"] = "Post Details";
+    ViewData["Title"] = Model.Title;
     var offers = ViewBag.Offers as List<Offer> ?? new List<Offer>();
     var currentUserIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
     int currentUserId = currentUserIdStr != null ? int.Parse(currentUserIdStr) : 0;
@@ -11,214 +11,130 @@
     bool isClosed = Model.ClosedAt != null;
 }
 
-<div class="container py-4">
-
-    <!-- NOTIFICATIONS -->
+<section class="post-details-page container py-4">
     @if (TempData["OfferSuccess"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            ✅ @TempData["OfferSuccess"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            @TempData["OfferSuccess"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Փակել"></button>
         </div>
     }
     @if (TempData["OfferError"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            ⚠️ @TempData["OfferError"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            @TempData["OfferError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Փակել"></button>
         </div>
     }
 
-    <!-- POST CARD -->
-    <div class="card shadow-sm border-0 mb-4 rounded-4">
+    <a href="javascript:history.back()" class="post-back-link">← Վերադառնալ հարցումներին</a>
 
-        <div class="card-body p-4">
-
-            <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <h2 class="fw-bold mb-0">
-                        @Model.Title
-                    </h2>
-                    @if (isClosed)
-                    {
-                        <span class="badge bg-danger rounded-pill px-3 py-2" style="font-size:13px;">
-                            ✔ Closed
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success rounded-pill px-3 py-2" style="font-size:13px;">
-                            🟢 Open
-                        </span>
-                    }
+    <article class="post-details-card">
+        <header class="post-details-header">
+            <div>
+                <div class="post-details-labels">
+                    <span class="post-category">@Model.Category?.Name</span>
+                    <span class="post-state @(isClosed ? "closed" : "open")">@(isClosed ? "Փակված" : "Բաց")</span>
                 </div>
-                <small class="text-muted">@Model.CreatedAt.ToString("dd MMM yyyy")</small>
+                <h1>@Model.Title</h1>
             </div>
+            <time>@Model.CreatedAt.ToString("dd MMM yyyy, HH:mm")</time>
+        </header>
 
-            <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
-                <span>📍 @Model.City</span>
-                <span>👁 @Model.ViewCount views</span>
-                <span>🏷 @Model.Category?.Name</span>
-                <span>
-                    👤 Posted by:
-                    <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.UserId"
-                       class="text-decoration-none fw-semibold text-dark">
-                        @Model.User?.UserName
-                    </a>
-                </span>
-            </div>
-
-            <p class="mt-2 mb-0">@Model.Description</p>
-
+        <div class="post-details-meta">
+            <span>⌖ @Model.City</span>
+            <span>◉ @Model.ViewCount դիտում</span>
+            <span>Հրապարակել է՝ <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.UserId">@Model.User?.UserName</a></span>
         </div>
 
-    </div>
+        <p class="post-details-description">@Model.Description</p>
 
-    <!-- IMAGES SECTION -->
-    @if (Model.Media != null && Model.Media.Any())
-    {
-        <h5 class="fw-semibold mb-3">📷 Photos</h5>
-
-        <div class="row g-2 mb-4">
-
-            @foreach (var media in Model.Media.OrderBy(m => m.Order))
-            {
-                if (media.Type == MediaType.Image)
+        @if (Model.Media != null && Model.Media.Any())
+        {
+            <div class="post-gallery">
+                @foreach (var media in Model.Media.OrderBy(m => m.Order))
                 {
-                    <div class="col-md-4">
-
-                        <img src="@Url.Content(media.FilePath)"
-                             class="img-fluid rounded-3 shadow-sm w-100"
-                             style="height:200px; object-fit:cover;" />
-
-                    </div>
+                    if (media.Type == MediaType.Image)
+                    {
+                        <a href="@Url.Content(media.FilePath)" target="_blank" class="post-gallery-item">
+                            <img src="@Url.Content(media.FilePath)" alt="@Model.Title" />
+                        </a>
+                    }
                 }
-            }
-
-        </div>
-    }
-
-    <!-- OFFERS SECTION -->
-    <div class="d-flex justify-content-between align-items-center mt-2 mb-3">
-
-        <h5 class="fw-semibold mb-0">
-            💬 Offers
-            <span class="badge bg-light text-dark border ms-1">@offers.Count</span>
-        </h5>
-
-        @if (!isClosed && !isPostOwner && User.Identity!.IsAuthenticated)
-        {
-            <a asp-controller="Offer"
-               asp-action="Create"
-               asp-route-postId="@Model.Id"
-               class="btn btn-dark btn-sm rounded-pill px-3">
-                + Make Offer
-            </a>
-        }
-        else if (isClosed)
-        {
-            <span class="badge bg-secondary rounded-pill px-3 py-2">Post Closed</span>
-        }
-        else if (!User.Identity!.IsAuthenticated)
-        {
-            <a asp-controller="User" asp-action="Login" class="btn btn-outline-dark btn-sm rounded-pill px-3">
-                Login to Offer
-            </a>
-        }
-
-    </div>
-
-    @if (offers.Any())
-    {
-        @foreach (var offer in offers)
-        {
-            var statusClass = offer.Status switch
-            {
-                OfferStatus.Accepted => "bg-success",
-                OfferStatus.Rejected => "bg-danger",
-                _ => "bg-warning text-dark"
-            };
-
-            var borderClass = offer.Status switch
-            {
-                OfferStatus.Accepted => "border-start border-success border-3",
-                OfferStatus.Rejected => "border-start border-danger border-3 opacity-75",
-                _ => ""
-            };
-
-            <div class="card mb-3 border-0 shadow-sm rounded-4 @borderClass">
-
-                <div class="card-body">
-
-                    <div class="d-flex justify-content-between align-items-start">
-
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <h5 class="fw-bold mb-0 text-success">
-                                    @offer.Currency @offer.Price
-                                </h5>
-                                <span class="badge @statusClass rounded-pill px-2">
-                                    @offer.Status
-                                </span>
-                            </div>
-
-                            <p class="text-muted mb-1">@offer.Message</p>
-
-                            <small class="text-muted">
-                                Offer by:
-                                <a asp-controller="User"
-                                   asp-action="Profile"
-                                   asp-route-id="@offer.UserId"
-                                   class="text-decoration-none fw-semibold text-dark">
-                                    @(offer.User?.UserName ?? "User " + offer.UserId)
-                                </a>
-                                · @offer.CreatedAt.ToString("dd MMM yyyy")
-                            </small>
-                        </div>
-
-                        <!-- ACCEPT / DECLINE BUTTONS — visible only to post owner for pending offers -->
-                        @if (isPostOwner && offer.Status == OfferStatus.Pending && !isClosed)
-                        {
-                            <div class="d-flex gap-2 ms-3 flex-shrink-0">
-
-                                <form asp-controller="Offer" asp-action="Accept" method="post">
-                                    <input type="hidden" name="id" value="@offer.Id" />
-                                    <button type="submit"
-                                            class="btn btn-success btn-sm rounded-pill px-3"
-                                            onclick="return confirm('Accept this offer? All other pending offers will be rejected and the post will be closed.')">
-                                        ✔ Accept
-                                    </button>
-                                </form>
-
-                                <form asp-controller="Offer" asp-action="Decline" method="post">
-                                    <input type="hidden" name="id" value="@offer.Id" />
-                                    <button type="submit"
-                                            class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                                        ✖ Decline
-                                    </button>
-                                </form>
-
-                            </div>
-                        }
-
-                    </div>
-
-                </div>
-
             </div>
         }
-    }
-    else
-    {
-        <div class="card border-0 shadow-sm rounded-4 p-4 text-center text-muted">
-            No offers yet. Be the first to make one!
-        </div>
-    }
+    </article>
 
-</div>
+    <section class="offers-section">
+        <header class="offers-heading">
+            <div>
+                <p class="eyebrow">Մասնագետների առաջարկներ</p>
+                <h2>Առաջարկներ <span>@offers.Count</span></h2>
+            </div>
+            @if (!isClosed && !isPostOwner && User.Identity!.IsAuthenticated)
+            {
+                <a asp-controller="Offer" asp-action="Create" asp-route-postId="@Model.Id" class="btn request-publish">Առաջարկել գին</a>
+            }
+            else if (isClosed)
+            {
+                <span class="post-state closed">Հարցումը փակված է</span>
+            }
+            else if (!User.Identity!.IsAuthenticated)
+            {
+                <a asp-controller="User" asp-action="Login" class="btn post-secondary-action">Մուտք գործել՝ առաջարկ անելու համար</a>
+            }
+        </header>
 
-<button type="button"
-        class="btn btn-outline-secondary rounded-pill px-4 ms-3 mb-4"
-        onclick="history.back()">
-    ← Back
-</button>
+        @if (offers.Any())
+        {
+            <div class="offers-list">
+                @foreach (var offer in offers)
+                {
+                    var statusText = offer.Status switch
+                    {
+                        OfferStatus.Accepted => "Ընդունված",
+                        OfferStatus.Rejected => "Մերժված",
+                        _ => "Սպասման մեջ"
+                    };
+                    var statusClass = offer.Status switch
+                    {
+                        OfferStatus.Accepted => "accepted",
+                        OfferStatus.Rejected => "rejected",
+                        _ => "pending"
+                    };
+
+                    <article class="offer-details-card @statusClass">
+                        <div class="offer-details-top">
+                            <div>
+                                <span class="offer-price">@offer.Currency @offer.Price</span>
+                                <a asp-controller="User" asp-action="Profile" asp-route-id="@offer.UserId" class="offer-user">@(offer.User?.UserName ?? "Օգտատեր")</a>
+                            </div>
+                            <span class="offer-status @statusClass">@statusText</span>
+                        </div>
+                        <p>@offer.Message</p>
+                        <footer>
+                            <time>@offer.CreatedAt.ToString("dd MMM yyyy, HH:mm")</time>
+                            @if (isPostOwner && offer.Status == OfferStatus.Pending && !isClosed)
+                            {
+                                <div class="offer-owner-actions">
+                                    <form asp-controller="Offer" asp-action="Accept" method="post">
+                                        <input type="hidden" name="id" value="@offer.Id" />
+                                        <button type="submit" class="btn offer-accept" onclick="return confirm('Ընդունե՞լ այս առաջարկը։ Մյուս առաջարկները կմերժվեն, իսկ հարցումը կփակվի։')">Ընդունել</button>
+                                    </form>
+                                    <form asp-controller="Offer" asp-action="Decline" method="post">
+                                        <input type="hidden" name="id" value="@offer.Id" />
+                                        <button type="submit" class="btn offer-decline">Մերժել</button>
+                                    </form>
+                                </div>
+                            }
+                        </footer>
+                    </article>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="offers-empty">Առաջարկներ դեռ չկան։ Եթե կարող եք օգնել, եղեք առաջինը։</div>
+        }
+    </section>
+</section>

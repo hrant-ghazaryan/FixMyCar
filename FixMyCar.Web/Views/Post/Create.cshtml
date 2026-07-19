@@ -1,113 +1,87 @@
-﻿@model FixMyCar.Web.ViewModels.PostCreateViewModel
+@model FixMyCar.Web.ViewModels.PostCreateViewModel
 
 @{
-    ViewData["Title"] = "Create Post";
+    ViewData["Title"] = "Տեղադրել հարցում";
 }
 
-<div class="container py-4">
-
-    <div class="row justify-content-center">
-
-        <div class="col-lg-8">
-
-            <h4 class="fw-semibold mb-4">
-                Create Post
-            </h4>
-
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
-
-                <!-- CARD 1: BASIC INFO -->
-                <div class="card border-0 shadow-sm rounded-3 mb-3">
-                    <div class="card-body">
-
-                        <h6 class="mb-3 text-muted">Basic Information</h6>
-
-                        <div class="row g-3">
-
-                            <div class="col-md-6">
-                                <label class="form-label">Title</label>
-                                <input asp-for="Title" class="form-control" />
-                                <span asp-validation-for="Title" class="text-danger small"></span>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">City</label>
-                                <input asp-for="City" class="form-control" />
-                                <span asp-validation-for="City" class="text-danger small"></span>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Category</label>
-                                <select asp-for="CategoryId"
-                                        asp-items="Model.Categories"
-                                        class="form-select">
-                                    <option value="">Select category</option>
-                                </select>
-                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- CARD 2: DETAILS -->
-                <div class="card border-0 shadow-sm rounded-3 mb-3">
-                    <div class="card-body">
-
-                        <h6 class="mb-3 text-muted">Details</h6>
-
-                        <div>
-                            <label class="form-label">Description</label>
-                            <textarea asp-for="Description"
-                                      class="form-control"
-                                      rows="4"></textarea>
-                            <span asp-validation-for="Description" class="text-danger small"></span>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- CARD 3: MEDIA -->
-                <div class="card border-0 shadow-sm rounded-3 mb-3">
-                    <div class="card-body">
-
-                        <h6 class="mb-3 text-muted">Images</h6>
-
-                        <input asp-for="Files"
-                               type="file"
-                               multiple
-                               accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                               class="form-control" />
-
-                        <span asp-validation-for="Files" class="text-danger small"></span>
-
-                        <small class="text-muted">
-                            You can upload multiple images
-                        </small>
-
-                    </div>
-                </div>
-
-                <!-- ACTIONS -->
-                <div class="d-flex justify-content-end gap-2">
-
-                    <a asp-action="Index"
-                           class="btn btn-light border btn-sm">
-                        Cancel
-                    </a>
-
-                    <button type="submit"
-                            class="btn btn-dark btn-sm px-4">
-                        Publish Post
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
+<section class="request-page container py-4">
+    <div class="request-heading">
+        <p class="eyebrow">Նոր հարցում</p>
+        <h1>Ի՞նչ խնդիր ունի մեքենան</h1>
+        <p>Նկարագրեք խնդիրը հնարավորինս պարզ, որպեսզի մասնագետները ճիշտ առաջարկ ուղարկեն։</p>
     </div>
 
-</div>
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="request-form">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <section class="request-form-card">
+            <div class="request-card-heading">
+                <span class="request-step">1</span>
+                <div>
+                    <h2>Հիմնական տեղեկություն</h2>
+                    <p>Ասեք՝ ինչ աշխատանքի կարիք ունի մեքենան։</p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label asp-for="Title" class="form-label">Հարցման վերնագիր</label>
+                    <input asp-for="Title" class="form-control" placeholder="Օր.` Շարժիչից ձայն է գալիս" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="City" class="form-label">Քաղաք</label>
+                    <input asp-for="City" class="form-control" placeholder="Օր.` Երևան" />
+                    <span asp-validation-for="City" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="CategoryId" class="form-label">Ծառայության կատեգորիա</label>
+                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                        <option value="">Ընտրեք կատեգորիան</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="request-form-card">
+            <div class="request-card-heading">
+                <span class="request-step">2</span>
+                <div>
+                    <h2>Նկարագրեք խնդիրը</h2>
+                    <p>Նշեք մեքենայի մոդելը, խնդրի ախտանիշները և կարևոր մանրամասները։</p>
+                </div>
+            </div>
+
+            <label asp-for="Description" class="form-label">Մանրամասն նկարագրություն</label>
+            <textarea asp-for="Description" class="form-control request-description" rows="6" placeholder="Օր.` Toyota Camry 2015. Շարժիչը սառը վիճակում աշխատելիս ձայն է հանում…"></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
+        </section>
+
+        <section class="request-form-card">
+            <div class="request-card-heading">
+                <span class="request-step">3</span>
+                <div>
+                    <h2>Ավելացրեք նկարներ</h2>
+                    <p>Նկարներն օգնում են մասնագետին արագ հասկանալ խնդիրը։</p>
+                </div>
+            </div>
+
+            <label class="upload-area" for="Files">
+                <span class="upload-icon">+</span>
+                <span><strong>Ընտրել նկարներ</strong><small>JPG, PNG կամ WebP · մինչև 10 նկար, յուրաքանչյուրը մինչև 5 ՄԲ</small></span>
+                <input asp-for="Files" id="Files" type="file" multiple accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+            </label>
+            <span asp-validation-for="Files" class="text-danger small"></span>
+        </section>
+
+        <div class="request-actions">
+            <a asp-action="Index" class="btn request-cancel">Չեղարկել</a>
+            <button type="submit" class="btn request-publish">Տեղադրել հարցումը</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

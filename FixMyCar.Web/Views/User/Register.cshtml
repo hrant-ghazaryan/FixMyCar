@@ -1,18 +1,56 @@
 @model FixMyCar.Web.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Գրանցում";
 }
 
-<div class="row justify-content-center mt-5"><div class="col-md-4">
-    <h2 class="text-center mb-4 fw-semibold">Create Account</h2>
-    <form asp-action="Register" method="post">
-        <div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" /><span asp-validation-for="Email" class="text-danger small"></span></div>
-        <div class="mb-3"><label asp-for="DisplayName" class="form-label"></label><input asp-for="DisplayName" class="form-control" /><span asp-validation-for="DisplayName" class="text-danger small"></span></div>
-        <div class="mb-3"><label asp-for="PhoneNumber" class="form-label"></label><input asp-for="PhoneNumber" class="form-control" /><span asp-validation-for="PhoneNumber" class="text-danger small"></span></div>
-        <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger small"></span></div>
-        <div class="mb-4"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" /><span asp-validation-for="ConfirmPassword" class="text-danger small"></span></div>
-        <button type="submit" class="btn btn-dark w-100">Create Account</button>
-    </form>
-    <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
-    <div class="text-center mt-3"><small class="text-muted">Already have an account? </small><a asp-action="Login">Login</a></div>
-</div></div>
+<section class="auth-page">
+    <div class="auth-card">
+        <div class="auth-heading">
+            <p class="eyebrow">FixMyCar</p>
+            <h1>Ստեղծեք հաշիվ</h1>
+            <p>Ստացեք առաջարկներ ձեր մեքենայի հարցման համար։</p>
+        </div>
+
+        <form asp-action="Register" method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="DisplayName" class="form-label">Անուն և ազգանուն</label>
+                <input asp-for="DisplayName" class="form-control" placeholder="Օր.` Արամ Մարտիրոսյան" autocomplete="name" />
+                <span asp-validation-for="DisplayName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Էլ․ փոստ</label>
+                <input asp-for="Email" class="form-control" placeholder="name@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label">Հեռախոսահամար <span>(ոչ պարտադիր)</span></label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="+374 XX XX XX XX" autocomplete="tel" />
+                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Գաղտնաբառ</label>
+                <input asp-for="Password" class="form-control" placeholder="Առնվազն 8 նիշ" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">Կրկնել գաղտնաբառը</label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Կրկնեք գաղտնաբառը" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn auth-submit w-100">Գրանցվել</button>
+        </form>
+
+        <p class="auth-switch">Արդեն ունե՞ք հաշիվ։ <a asp-action="Login">Մուտք գործել</a></p>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

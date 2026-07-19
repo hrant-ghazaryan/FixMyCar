@@ -2,7 +2,7 @@
 @model FixMyCar.Web.Models.User
 
 @{
-    ViewData["Title"] = ViewBag.IsOwnProfile == true ? "My Profile" : $"{Model.UserName}'s Profile";
+    ViewData["Title"] = ViewBag.IsOwnProfile == true ? "Իմ էջը" : $"{Model.UserName}-ի էջը";
     var userPosts = ViewBag.UserPosts as List<Post> ?? new List<Post>();
     var userOffers = ViewBag.UserOffers as List<Offer> ?? new List<Offer>();
     var reviews = ViewBag.Reviews as List<Review> ?? new List<Review>();
@@ -11,313 +11,164 @@
     bool canLeaveReview = ViewBag.CanLeaveReview == true;
 }
 
-<style>
-    /* Premium profile styling */
-    .profile-avatar {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #212529, #495057);
-        color: white;
-        font-size: 32px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    
-    .rating-badge {
-        background-color: #fff9db;
-        color: #f59f00;
-        border: 1px solid #ffe3e3;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 30px;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .rating-stars {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-        gap: 5px;
-    }
-    
-    .rating-stars input {
-        display: none;
-    }
-    
-    .rating-stars label {
-        font-size: 2rem;
-        color: #e9ecef;
-        cursor: pointer;
-        transition: color 0.15s ease-in-out;
-    }
-    
-    .rating-stars input:checked ~ label,
-    .rating-stars label:hover,
-    .rating-stars label:hover ~ label {
-        color: #f59f00;
-    }
-
-    .nav-pills .nav-link {
-        color: #495057;
-        font-weight: 500;
-        border-radius: 20px;
-        padding: 8px 20px;
-        transition: all 0.2s;
-    }
-
-    .nav-pills .nav-link.active {
-        background-color: #212529;
-        color: #fff;
-    }
-
-    .review-card {
-        border-left: 4px solid #212529;
-        transition: transform 0.2s;
-    }
-
-    .review-card:hover {
-        transform: translateY(-2px);
-    }
-</style>
-
-<div class="container py-4">
-
-    <!-- TempData Success/Error notifications -->
+<section class="profile-page container py-4">
     @if (TempData["ReviewError"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             @TempData["ReviewError"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Փակել"></button>
         </div>
     }
 
-    <!-- PROFILE HEADER CARD -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-4">
-            <div class="row align-items-center g-3">
-                <div class="col-auto">
-                    <div class="profile-avatar">
-                        @(!string.IsNullOrWhiteSpace(Model.UserName) ? Model.UserName[0].ToString().ToUpper() : "U")
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
-                        <h2 class="fw-bold mb-0">
-                            @(string.IsNullOrWhiteSpace(Model.UserName) ? "User" : Model.UserName)
-                        </h2>
-                        <span class="badge bg-dark rounded-pill px-3">@Model.Role</span>
-                        
-                        @if (averageRating > 0)
-                        {
-                            <div class="rating-badge small">
-                                <span>⭐ @averageRating.ToString("0.0")</span>
-                                <span class="text-muted">(@reviews.Count reviews)</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <span class="badge bg-light text-muted border">No ratings yet</span>
-                        }
-                    </div>
-
-                    <p class="text-muted mb-2">@Model.Email</p>
-
-                    <div class="small text-muted d-flex flex-wrap gap-3">
-                        <span>📞 @(Model.PhoneNumber ?? "Not specified")</span>
-                        <span>📅 Member since @Model.CreatedAt.ToString("dd MMM yyyy")</span>
-                    </div>
-                </div>
-                
-                @if (isOwnProfile)
+    <header class="profile-header">
+        <div class="profile-avatar">@(!string.IsNullOrWhiteSpace(Model.UserName) ? Model.UserName[0].ToString().ToUpper() : "U")</div>
+        <div class="profile-details">
+            <div class="profile-name-row">
+                <h1>@(string.IsNullOrWhiteSpace(Model.UserName) ? "Օգտատեր" : Model.UserName)</h1>
+                <span class="profile-role">@Model.Role</span>
+            </div>
+            <div class="profile-rating">
+                @if (averageRating > 0)
                 {
-                    <div class="col-auto ms-auto">
-                        <a asp-controller="User" asp-action="Settings" class="btn btn-outline-dark rounded-pill px-4 btn-sm">
-                            ⚙ Edit Profile
-                        </a>
-                    </div>
+                    <span>★ @averageRating.ToString("0.0")</span>
+                    <small>@reviews.Count կարծիք</small>
+                }
+                else
+                {
+                    <small>Դեռ կարծիքներ չկան</small>
                 }
             </div>
+            <div class="profile-contact">
+                <span>@Model.Email</span>
+                <span>@(Model.PhoneNumber ?? "Հեռախոսահամարը նշված չէ")</span>
+                <span>Միացել է @Model.CreatedAt.ToString("dd MMM yyyy")</span>
+            </div>
         </div>
-    </div>
+        @if (isOwnProfile)
+        {
+            <a asp-controller="User" asp-action="Settings" class="btn profile-settings-button">Կարգավորումներ</a>
+        }
+    </header>
 
-    <!-- MAIN GRID -->
     <div class="row g-4">
-        
-        <!-- LEFT: POSTS, OFFERS, REVIEWS TABS -->
         <div class="@(canLeaveReview ? "col-lg-8" : "col-12")">
-            
-            <ul class="nav nav-pills mb-4 gap-2" id="profileTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="posts-tab" data-bs-toggle="pill" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="true">
-                        Posts (@userPosts.Count)
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="offers-tab" data-bs-toggle="pill" data-bs-target="#offers" type="button" role="tab" aria-controls="offers" aria-selected="false">
-                        Offers (@userOffers.Count)
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
-                        Reviews (@reviews.Count)
-                    </button>
-                </li>
-            </ul>
+            <nav class="profile-tabs" role="tablist">
+                <button class="active" id="posts-tab" data-bs-toggle="pill" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="true">
+                    Հարցումներ <span>@userPosts.Count</span>
+                </button>
+                <button id="offers-tab" data-bs-toggle="pill" data-bs-target="#offers" type="button" role="tab" aria-controls="offers" aria-selected="false">
+                    Առաջարկներ <span>@userOffers.Count</span>
+                </button>
+                <button id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                    Կարծիքներ <span>@reviews.Count</span>
+                </button>
+            </nav>
 
-            <div class="tab-content" id="profileTabsContent">
-                
-                <!-- TAB 1: POSTS -->
+            <div class="tab-content">
                 <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
                     @if (!userPosts.Any())
                     {
-                        <div class="card border-0 shadow-sm rounded-4 p-4 text-center text-muted">
-                            No posts created yet.
-                        </div>
+                        <div class="profile-empty">Դեռ հարցումներ չկան։</div>
                     }
                     else
                     {
                         @foreach (var post in userPosts)
                         {
-                            <div class="card border-0 shadow-sm rounded-4 mb-3">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <span class="badge bg-light text-dark border mb-2">@post.Category?.Name</span>
-                                            <h5 class="fw-bold mb-1">@post.Title</h5>
-                                        </div>
-                                        <small class="text-muted">@post.CreatedAt.ToString("dd MMM yyyy")</small>
+                            <article class="profile-list-card">
+                                <div class="profile-card-top">
+                                    <div>
+                                        <span class="post-category">@post.Category?.Name</span>
+                                        <h2>@post.Title</h2>
                                     </div>
-                                    <p class="text-muted mb-3">
-                                        @(post.Description.Length > 150 ? post.Description[..150] + "..." : post.Description)
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-muted small">📍 @post.City</span>
-                                        <a asp-controller="Post" asp-action="Details" asp-route-id="@post.Id" class="btn btn-outline-dark btn-sm rounded-pill px-3">
-                                            Details
-                                        </a>
-                                    </div>
+                                    <small>@post.CreatedAt.ToString("dd MMM yyyy")</small>
                                 </div>
-                            </div>
+                                <p>@(post.Description.Length > 150 ? post.Description[..150] + "..." : post.Description)</p>
+                                <footer>
+                                    <span>@post.City</span>
+                                    <a asp-controller="Post" asp-action="Details" asp-route-id="@post.Id" class="btn post-secondary-action">Դիտել</a>
+                                </footer>
+                            </article>
                         }
                     }
                 </div>
 
-                <!-- TAB 2: OFFERS -->
                 <div class="tab-pane fade" id="offers" role="tabpanel" aria-labelledby="offers-tab">
                     @if (!userOffers.Any())
                     {
-                        <div class="card border-0 shadow-sm rounded-4 p-4 text-center text-muted">
-                            No offers made yet.
-                        </div>
+                        <div class="profile-empty">Դեռ առաջարկներ չկան։</div>
                     }
                     else
                     {
                         @foreach (var offer in userOffers)
                         {
-                            <div class="card border-0 shadow-sm rounded-4 mb-3">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="fw-bold text-success">$@offer.Price</h5>
-                                        <span class="badge bg-light text-dark border">Post: @(offer.Post?.Title ?? "Deleted Post")</span>
-                                    </div>
-                                    <p class="mb-3">@offer.Message</p>
-                                    <div class="d-flex justify-content-end">
-                                        @if (offer.Post != null)
-                                        {
-                                            <a asp-controller="Post" asp-action="Details" asp-route-id="@offer.PostId" class="btn btn-outline-dark btn-sm rounded-pill px-3">
-                                                View Post
-                                            </a>
-                                        }
+                            <article class="profile-list-card">
+                                <div class="profile-card-top">
+                                    <div>
+                                        <span class="offer-price">$@offer.Price</span>
+                                        <h2>@(offer.Post?.Title ?? "Հեռացված հարցում")</h2>
                                     </div>
                                 </div>
-                            </div>
+                                <p>@offer.Message</p>
+                                @if (offer.Post != null)
+                                {
+                                    <footer><a asp-controller="Post" asp-action="Details" asp-route-id="@offer.PostId" class="btn post-secondary-action">Դիտել հարցումը</a></footer>
+                                }
+                            </article>
                         }
                     }
                 </div>
 
-                <!-- TAB 3: REVIEWS -->
                 <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
                     @if (!reviews.Any())
                     {
-                        <div class="card border-0 shadow-sm rounded-4 p-4 text-center text-muted">
-                            No reviews yet.
-                        </div>
+                        <div class="profile-empty">Դեռ կարծիքներ չկան։</div>
                     }
                     else
                     {
-                        @foreach (var r in reviews)
+                        @foreach (var review in reviews)
                         {
-                            <div class="card border-0 shadow-sm rounded-4 mb-3 review-card">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <h6 class="fw-bold mb-0">
-                                                <a asp-controller="User" asp-action="Profile" asp-route-id="@r.ReviewerId" class="text-dark text-decoration-none">
-                                                    @r.Reviewer.UserName
-                                                </a>
-                                            </h6>
-                                            <div class="text-warning small">
-                                                @for (int i = 1; i <= 5; i++)
-                                                {
-                                                    <span>@(i <= r.Rating ? "★" : "☆")</span>
-                                                }
-                                            </div>
-                                        </div>
-                                        <small class="text-muted">@r.CreatedAt.ToString("dd MMM yyyy")</small>
+                            <article class="profile-list-card review-list-card">
+                                <div class="profile-card-top">
+                                    <div>
+                                        <a asp-controller="User" asp-action="Profile" asp-route-id="@review.ReviewerId" class="reviewer-name">@review.Reviewer.UserName</a>
+                                        <div class="review-stars">@for (int i = 1; i <= 5; i++) { <span>@(i <= review.Rating ? "★" : "☆")</span> }</div>
                                     </div>
-                                    <p class="text-muted mb-0">@r.Comment</p>
+                                    <small>@review.CreatedAt.ToString("dd MMM yyyy")</small>
                                 </div>
-                            </div>
+                                <p>@review.Comment</p>
+                            </article>
                         }
                     }
                 </div>
-
             </div>
-
         </div>
 
-        <!-- RIGHT: WRITE A REVIEW -->
         @if (canLeaveReview)
         {
-            <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 20px; z-index: 100;">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3">Rate @Model.UserName</h5>
-                        
-                        <form asp-controller="User" asp-action="AddReview" method="post">
-                            <input type="hidden" name="targetUserId" value="@Model.Id" />
-                            
-                            <div class="mb-3">
-                                <label class="form-label d-block text-muted small">Your Rating</label>
-                                <div class="rating-stars">
-                                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 stars">★</label>
-                                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars">★</label>
-                                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars">★</label>
-                                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars">★</label>
-                                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star">★</label>
-                                </div>
+            <aside class="col-lg-4">
+                <div class="review-form-card">
+                    <h2>Կարծիք թողնել</h2>
+                    <p>@Model.UserName-ի հետ աշխատանքի մասին</p>
+                    <form asp-controller="User" asp-action="AddReview" method="post">
+                        <input type="hidden" name="targetUserId" value="@Model.Id" />
+                        <div class="mb-3">
+                            <label class="form-label">Գնահատական</label>
+                            <div class="rating-stars">
+                                <input type="radio" id="star5" name="rating" value="5" required /><label for="star5">★</label>
+                                <input type="radio" id="star4" name="rating" value="4" /><label for="star4">★</label>
+                                <input type="radio" id="star3" name="rating" value="3" /><label for="star3">★</label>
+                                <input type="radio" id="star2" name="rating" value="2" /><label for="star2">★</label>
+                                <input type="radio" id="star1" name="rating" value="1" /><label for="star1">★</label>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="comment" class="form-label text-muted small">Your Comment</label>
-                                <textarea id="comment" name="comment" rows="4" class="form-control rounded-3" placeholder="Tell others about your experience..." max-length="500" required></textarea>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-dark rounded-pill w-100 py-2 fw-semibold">
-                                Submit Review
-                            </button>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Կարծիք</label>
+                            <textarea id="comment" name="comment" rows="4" class="form-control" placeholder="Կիսվեք ձեր փորձով..." maxlength="500" required></textarea>
+                        </div>
+                        <button type="submit" class="btn auth-submit w-100">Ուղարկել կարծիքը</button>
+                    </form>
                 </div>
-            </div>
+            </aside>
         }
-
     </div>
-
-</div>
+</section>
